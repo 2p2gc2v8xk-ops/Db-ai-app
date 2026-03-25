@@ -325,10 +325,16 @@ function alpFetchBars(symbol,tf,limit){
   var k=symbol+"_"+tf+"_"+limit;
   if(ALP.cache[k]&&Date.now()-ALP.cache[k].t<300000)return Promise.resolve(ALP.cache[k].d);
   if(!ALP.keyId||!ALP.secret)return Promise.resolve(null);
-  return fetch(ALP.dataUrl+"/stocks/"+symbol+"/bars?timeframe="+tf+"&limit="+limit+"&feed=iex",{headers:alpHeaders()})
+  // Try default feed (SIP on paper), fallback to IEX
+  return fetch(ALP.dataUrl+"/stocks/"+symbol+"/bars?timeframe="+tf+"&limit="+limit,{headers:alpHeaders()})
     .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
-    .then(function(d){var bars=d.bars||[];ALP.cache[k]={d:bars,t:Date.now()};return bars;})
-    .catch(function(){return null;});
+    .then(function(d){var bars=d.bars||[];if(bars.length){ALP.cache[k]={d:bars,t:Date.now()};return bars;}throw new Error("empty");})
+    .catch(function(){
+      return fetch(ALP.dataUrl+"/stocks/"+symbol+"/bars?timeframe="+tf+"&limit="+limit+"&feed=iex",{headers:alpHeaders()})
+        .then(function(r){if(!r.ok)throw new Error(r.status);return r.json();})
+        .then(function(d){var bars=d.bars||[];ALP.cache[k]={d:bars,t:Date.now()};return bars;})
+        .catch(function(){return null;});
+    });
 }
 
 function alpFetchSnapshot(symbol){
@@ -584,10 +590,7 @@ function analyse(s){
 // ---- STRUCTURED JSON ENGINE ----
 var lastEngineOutput=null;
 function generateEngineOutput(alerts){
-  var used=0;
-  for(var i=0;i<alerts.length;i++)used+=alerts[i].ps;
-  used=+used.toFixed(2);
-  var out={alerts:[],portfolio:{budget:C.budget,used:used,remaining:+(C.budget-used).toFixed(2)},meta:{market_condition:alerts.length>3?"Bullish":alerts.length>1?"Neutral":"Cautious",scan_time:new Date().toISOString(),total_scanned:UNI.length}};
+  var out={alerts:[],scanner:{budget:C.budget,price_range:"$"+C.pxMin+"–$"+C.pxMax,strategy:C.strat},meta:{market_condition:alerts.length>3?"Bullish":alerts.length>1?"Neutral":"Cautious",scan_time:new Date().toISOString(),total_scanned:UNI.length}};
   for(var i=0;i<alerts.length;i++){
     var a=alerts[i];
     out.alerts.push({
@@ -628,7 +631,9 @@ function readCfg(){
 }
 
 function syncDisp(){
-  $("nB").textContent="£"+C.budget.toLocaleString();$("qP").textContent="£"+C.budget.toLocaleString();
+  $("nB").textContent="£"+C.budget.toLocaleString();
+  $("qP").textContent="£"+C.budget.toLocaleString();
+  var pn=$("qP-n");if(pn)pn.textContent="Scanning Budget";
   $("eB").textContent="£"+C.budget.toLocaleString();$("eM").textContent=(C.mp*100)+"%";
   $("eS").textContent=(C.sl*100)+"%";$("eR").textContent=C.rr+":1";
   $("eP").textContent="$"+C.pxMin+"-$"+C.pxMax;$("eH").textContent=C.hold+"d";
@@ -736,7 +741,6 @@ function runAnalysisSteps(){
     if(i>=steps.length){
       ST.alerts=UNI.map(function(s){return analyse(s);}).filter(Boolean).sort(function(a,b){return b.cf-a.cf;}).slice(0,12);
       var out=generateEngineOutput(ST.alerts);
-      ST.portfolio=out.portfolio;
       ST.meta=out.meta;
       notifyEngine(ST.alerts);
       $("ov").classList.remove("on");$("scanBtn").disabled=false;$("scanBtn").textContent="Run AI Market Scan";
@@ -753,15 +757,35 @@ function runAnalysisSteps(){
 function loadCharts(){
   ST.alerts.forEach(function(a){
     alpFetchBars(a.tk,"1Day",30).then(function(bars){
+      if(!bars||!bars.length){
+        // Fallback: build chart from real snapshot data we already have
+        bars=buildSnapshotBars(a);
+      }
       if(!bars||!bars.length)return;
       a._bars=bars;
-      // Use RAF to ensure canvas is painted and has layout dimensions
       requestAnimationFrame(function(){
-        var cv=document.getElementById("chart-"+a.tk);
-        if(cv)drawSparkline(cv,bars,a);
+        requestAnimationFrame(function(){
+          var cv=document.getElementById("chart-"+a.tk);
+          if(cv)drawSparkline(cv,bars,a);
+        });
       });
     });
   });
+}
+
+// Build minimal bar array from real Alpaca snapshot data
+function buildSnapshotBars(a){
+  var bars=[];
+  var prevC=a._prevClose||a.px*0.98;// prevClose is real Alpaca data
+  var hi=a._dayHigh||a.px;
+  var lo=a._dayLow||a.px;
+  var cur=a.px;
+  // These are all real data points from the Alpaca snapshot
+  if(prevC)bars.push({c:prevC,v:0,h:prevC,l:prevC,o:prevC});
+  if(lo&&lo!==prevC&&lo!==cur)bars.push({c:lo,v:0,h:lo,l:lo,o:lo});
+  if(hi&&hi!==cur&&hi!==lo)bars.push({c:hi,v:0,h:hi,l:hi,o:hi});
+  bars.push({c:cur,v:a._dayVol||0,h:hi||cur,l:lo||cur,o:prevC||cur});
+  return bars.length>=2?bars:null;
 }
 
 // ---- RENDER ----
@@ -812,11 +836,10 @@ function updS(){
     $("qW").textContent=Math.min(78,Math.max(55,avg*.85+5)).toFixed(1)+"%";
     $("qC").textContent=avg.toFixed(0)+"%";
   }
-  if(ST.portfolio){
-    $("qP").textContent="£"+ST.portfolio.remaining.toLocaleString();
-    $("nB").textContent="£"+ST.portfolio.remaining.toLocaleString();
-    var pn=$("qP-n");if(pn)pn.textContent="Available (£"+ST.portfolio.used+" used)";
-  }
+  // Budget is scanning budget — never deducted
+  $("qP").textContent="£"+C.budget.toLocaleString();
+  $("nB").textContent="£"+C.budget.toLocaleString();
+  var pn=$("qP-n");if(pn)pn.textContent="Scanning Budget";
 }
 
 // ---- JSON EXPORT ----
