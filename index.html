@@ -175,6 +175,23 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .about{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-top:16px;text-align:center}
 .about p{font-size:12px;color:var(--tx3);line-height:1.5}
 
+/* Changelog */
+.cl-ver{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:12px}
+.cl-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cl-tag{font-size:14px;font-weight:800;color:var(--blu)}.cl-date{font-size:11px;color:var(--tx3);font-family:monospace}
+.cl-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;margin-left:8px}
+.cl-badge.latest{background:var(--grn2);color:var(--grn)}.cl-badge.beta{background:var(--amb2);color:var(--amb)}
+.cl-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.cl-list li{font-size:12.5px;color:var(--tx2);line-height:1.5;padding-left:14px;position:relative}
+.cl-list li::before{content:"";position:absolute;left:0;top:7px;width:5px;height:5px;border-radius:50%;background:var(--blu)}
+.cl-cat{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:10px;margin-bottom:6px;padding-left:14px}
+
+/* JSON Export */
+.export-btn{width:100%;padding:14px;background:var(--s2);border:1px solid var(--brd);border-radius:12px;font-size:13px;font-weight:600;color:var(--blu);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
+.export-btn:active{background:var(--blu2)}
+.export-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--grn);color:#070d1a;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.export-toast.show{opacity:1}
+
 .ov{display:none;position:fixed;inset:0;background:rgba(7,13,26,.94);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:14px}
 .ov.on{display:flex}
 .ov-sp{width:36px;height:36px;border:2px solid var(--brd);border-top-color:var(--blu);border-radius:50%;animation:spin .8s linear infinite}
@@ -205,7 +222,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   <div class="sp-logo">DB</div>
   <div class="sp-name">DB <b>AI Bot</b></div>
   <div class="sp-sub">Nasdaq Intelligence</div>
-  <div class="sp-ver-badge">● Beta v1.0 · Build 001</div>
+  <div class="sp-ver-badge">● v1.0.1 · Build 002</div>
   <div class="sp-feats">
     <div class="sf"><div class="sf-ic">📊</div><div class="sf-tx"><b>Deep Analyst Reasoning</b><br>Every alert explains the why</div></div>
     <div class="sf"><div class="sf-ic">⚙️</div><div class="sf-tx"><b>Fully Configurable</b><br>Budget, risk, strategy — your rules</div></div>
@@ -214,7 +231,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   </div>
   <button class="sp-btn" id="startBtn">Get Started</button>
   <div class="sp-share"><b id="shareUrl"></b></div>
-  <div class="sp-ver">v1.0.0-beta · Build 001</div>
+  <div class="sp-ver">v1.0.1 · Build 002</div>
 </div>
 
 <div id="app">
@@ -225,7 +242,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   <div class="content">
     <div class="vw on" id="vAlerts">
       <div class="qsg">
-        <div class="qs"><div class="qs-l">Portfolio</div><div class="qs-v" id="qP">£500</div><div class="qs-n">Available</div></div>
+        <div class="qs"><div class="qs-l">Portfolio</div><div class="qs-v" id="qP">£500</div><div class="qs-n" id="qP-n">Available</div></div>
         <div class="qs"><div class="qs-l">Alerts</div><div class="qs-v" id="qA">0</div><div class="qs-n">Active</div></div>
         <div class="qs"><div class="qs-l">Win Rate</div><div class="qs-v" id="qW">—</div><div class="qs-n">Projected</div></div>
         <div class="qs"><div class="qs-l">Confidence</div><div class="qs-v" id="qC">—</div><div class="qs-n">Average</div></div>
@@ -236,18 +253,20 @@ input,select{font-family:inherit;-webkit-appearance:none}
     </div>
     <div class="vw" id="vSettings"></div>
     <div class="vw" id="vEngine"></div>
+    <div class="vw" id="vChangelog"></div>
   </div>
   <div class="tabs" id="tabBar"></div>
 </div>
 
 <div class="ov" id="ov"><div class="ov-sp"></div><div class="ov-s" id="ovS"></div><div class="ov-d" id="ovD"></div></div>
+<div class="export-toast" id="exportToast">JSON copied to clipboard</div>
 
 <script>
 // ============================================================
-//  DB AI Bot v1.0.0-beta — Build 001
+//  DB AI Bot v1.0.1 — Build 002
 //  Shareable PWA with auto-updates
 // ============================================================
-var APP_VERSION = "1.0.0-beta";
+var APP_VERSION = "1.0.1";
 var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode:standalone)").matches;
 
 // Service Worker + Updates
@@ -310,6 +329,11 @@ function patR(s){var px=s.px;var p=["Cup & handle over 6 weeks. Handle held abov
 
 function riskR(s,a){var t=["Position: £"+a.ps.toFixed(0)+" ("+(C.mp*100).toFixed(0)+"% of portfolio). Stop $"+a.sl.toFixed(2)+" caps downside at £"+(a.sh*(a.px-a.sl)).toFixed(0)+"."];t.push("Target $"+a.tg.toFixed(2)+" = "+C.rr+":1 R:R. Risk £"+(a.sh*(a.px-a.sl)).toFixed(0)+" to make £"+(a.sh*(a.tg-a.px)).toFixed(0)+".");if(s.beta>2.5)t.push("Beta "+s.beta+" — high vol. Wider stops needed.");if(s.px<1)t.push("Sub-$1 delisting risk. Hard time-stop; don't average down.");t.push("Max hold: "+C.hold+" days.");return t.join(" ");}
 
+// ---- SEEDED RANDOM (consistent per ticker per session) ----
+var _seed=Date.now();
+function seedHash(str){var h=0;for(var i=0;i<str.length;i++){h=((h<<5)-h)+str.charCodeAt(i);h|=0;}return Math.abs(h);}
+function sRand(tk,idx){var s=seedHash(tk)+_seed+idx;s=((s*1103515245+12345)&0x7fffffff);return(s%10000)/10000;}
+
 // ---- ANALYSIS ----
 function analyse(s){
   if(s.px<C.pxMin||s.px>C.pxMax)return null;
@@ -318,24 +342,69 @@ function analyse(s){
   if(C.strat==="conservative"){w.f=35;w.r=20;w.t=25;w.s=10;w.p=10;}
   if(C.strat==="momentum"){w.t=35;w.s=30;w.p=20;w.f=10;w.r=5;}
   if(C.strat==="value"){w.f=40;w.t=25;w.r=15;w.s=10;w.p=10;}
-  var rsi=Math.max(15,Math.min(85,50-(s.px<2?10:0)-(s.rev>30?8:0)-(s.si>15?5:0)+(Math.random()*30-15)));
+  var r0=sRand(s.tk,0),r1=sRand(s.tk,1),r2=sRand(s.tk,2),r3=sRand(s.tk,3),r4=sRand(s.tk,4),r5=sRand(s.tk,5),r6=sRand(s.tk,6),r7=sRand(s.tk,7);
+  var rsi=Math.max(15,Math.min(85,50-(s.px<2?10:0)-(s.rev>30?8:0)-(s.si>15?5:0)+(r0*30-15)));
   if(rsi<30)sc+=12*(w.t/30);else if(rsi<40)sc+=6*(w.t/30);else if(rsi>70)sc-=8*(w.t/30);
-  if(s.rev>20&&Math.random()>.45)sc+=10*(w.t/30);if(Math.random()<.28)sc+=8*(w.t/30);if(Math.random()<.35)sc+=6*(w.t/30);
-  if(s.rev>25&&Math.random()>.5)sc+=8*(w.t/30);
+  if(s.rev>20&&r1>.45)sc+=10*(w.t/30);if(r2<.28)sc+=8*(w.t/30);if(r3<.35)sc+=6*(w.t/30);
+  if(s.rev>25&&r4>.5)sc+=8*(w.t/30);
   if(s.rev!==null){if(s.rev>40)sc+=10*(w.f/25);else if(s.rev>15)sc+=5*(w.f/25);else if(s.rev<-10)sc-=8*(w.f/25);}
-  if(Math.random()>.6)sc+=6*(w.f/25);
-  if(["Technology","AI/ML","Quantum","Aerospace"].indexOf(s.sec)>=0&&Math.random()>.4)sc+=10*(w.s/20);else if(Math.random()>.65)sc+=5*(w.s/20);
-  if(Math.random()>.5)sc+=8*(w.s/20);if(s.si>20)sc+=8*(w.s/20);else if(s.si>15)sc+=5*(w.s/20);
-  if(Math.random()>.5)sc+=7*(w.p/15);if(s.beta>2.5)sc-=4*(w.r/10);if(s.px<1)sc-=3*(w.r/10);
-  var dr=1+(Math.random()*.06-.03),px=+(s.px*dr).toFixed(2),ch=+((dr-1)*100).toFixed(2);
+  if(r5>.6)sc+=6*(w.f/25);
+  if(["Technology","AI/ML","Quantum","Aerospace"].indexOf(s.sec)>=0&&r6>.4)sc+=10*(w.s/20);else if(r6>.65)sc+=5*(w.s/20);
+  if(r7>.5)sc+=8*(w.s/20);if(s.si>20)sc+=8*(w.s/20);else if(s.si>15)sc+=5*(w.s/20);
+  if(sRand(s.tk,8)>.5)sc+=7*(w.p/15);if(s.beta>2.5)sc-=4*(w.r/10);if(s.px<1)sc-=3*(w.r/10);
+  var dr=1+(sRand(s.tk,9)*.06-.03),px=+(s.px*dr).toFixed(2),ch=+((dr-1)*100).toFixed(2);
   var sh=Math.floor(C.budget*C.mp/px),sl=+(px*(1-C.sl)).toFixed(2),tg=+(px+(px-sl)*C.rr).toFixed(2);
   var cf=Math.min(95,Math.max(20,Math.round(50+sc)));
   if(cf<C.minCf)return null;
   var tp=sc>=30?"buy":sc<=-10?"sell":sc>=15?"watch":null;if(!tp)return null;
-  var a={tk:s.tk,nm:s.nm,sec:s.sec,px:px,ch:ch,beta:s.beta,cf:cf,tp:tp,sl:sl,tg:tg,sh:sh,ps:+(sh*px).toFixed(2),rr:C.rr,rsi:rsi};
+  var support=+(px*(1-C.sl-0.005)).toFixed(2);
+  var resistance=+(tg*1.005).toFixed(2);
+  var timeframe=C.hold<=14?"Day Trade":C.hold<=30?"Swing":"Position";
+  var a={tk:s.tk,nm:s.nm,sec:s.sec,px:px,ch:ch,beta:s.beta,cf:cf,tp:tp,sl:sl,tg:tg,sh:sh,ps:+(sh*px).toFixed(2),rr:C.rr,rsi:rsi,
+    chart:{timeframe:"1D",support:support,resistance:resistance},
+    timeframe:timeframe,
+    notifications:{entry_alert:tp==="buy",target_alert:true,stop_alert:true,news_alert:tp!=="sell"}
+  };
   a.techR=techR(s,rsi);a.fundR=fundR(s);a.sentR=sentR(s);a.patR=patR(s);a.riskR=riskR(s,a);
   a.verdict={buy:"Strong bullish confluence. Initiating with defined risk.",sell:"Evidence bearish. Avoid until conditions improve.",watch:"Promising setup. Monitoring for confirmation."}[tp];
   return a;
+}
+
+// ---- STRUCTURED JSON ENGINE ----
+var lastEngineOutput=null;
+function generateEngineOutput(alerts){
+  var used=0;
+  for(var i=0;i<alerts.length;i++)used+=alerts[i].ps;
+  used=+used.toFixed(2);
+  var out={alerts:[],portfolio:{budget:C.budget,used:used,remaining:+(C.budget-used).toFixed(2)},meta:{market_condition:alerts.length>3?"Bullish":alerts.length>1?"Neutral":"Cautious",scan_time:new Date().toISOString(),total_scanned:UNI.length}};
+  for(var i=0;i<alerts.length;i++){
+    var a=alerts[i];
+    out.alerts.push({
+      ticker:a.tk,company:a.nm,signal:a.tp.toUpperCase(),confidence:a.cf,price:a.px,change_percent:a.ch,
+      entry:a.px,target:a.tg,stop:a.sl,shares:a.sh,position_size:a.ps,risk_reward:a.rr+":1",
+      timeframe:a.timeframe,
+      reasoning:{technical:a.techR,fundamental:a.fundR,sentiment:a.sentR,pattern:a.patR,risk:a.riskR},
+      chart:a.chart,
+      notifications:a.notifications
+    });
+  }
+  lastEngineOutput=out;
+  return out;
+}
+
+// ---- NOTIFICATION ENGINE ----
+var notifPermission="default";
+function requestNotifPermission(){
+  if("Notification" in window&&Notification.permission==="default"){
+    Notification.requestPermission().then(function(p){notifPermission=p;});
+  }else if("Notification" in window){notifPermission=Notification.permission;}
+}
+function notifyEngine(alerts){
+  if(notifPermission!=="granted")return;
+  var buys=alerts.filter(function(a){return a.tp==="buy";});
+  if(buys.length>0){
+    try{new Notification("DB AI Bot — New Trade Opportunity",{body:buys.length+" BUY signal"+(buys.length>1?"s":"")+" detected: "+buys.map(function(a){return a.tk;}).join(", "),icon:"icon.svg"});}catch(e){}
+  }
 }
 
 // ---- UI BUILDERS ----
@@ -368,11 +437,11 @@ function buildSettings(){
 }
 
 function buildEngine(){
-  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 001</p></div>';
+  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 002</p></div>';
 }
 
 function buildTabs(){
-  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">📈</div><div class="tb-lb">Alerts</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙️</div><div class="tb-lb">Settings</div></button><button class="tb" data-v="Engine"><div class="tb-ic">🧠</div><div class="tb-lb">Engine</div></button>';
+  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">📈</div><div class="tb-lb">Alerts</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙️</div><div class="tb-lb">Settings</div></button><button class="tb" data-v="Engine"><div class="tb-ic">🧠</div><div class="tb-lb">Engine</div></button><button class="tb" data-v="Changelog"><div class="tb-ic">📋</div><div class="tb-lb">Log</div></button>';
   $("tabBar").onclick=function(e){var t=e.target.closest(".tb");if(t)switchTab(t.dataset.v);};
 }
 
@@ -392,13 +461,18 @@ function dismissInstall(){$("installBanner").classList.remove("show");}
 // ---- SCAN ----
 var STEPS=["Screening Nasdaq...","Technical analysis...","Fundamentals...","Sentiment scan...","Patterns...","Risk calibration...","Generating reasoning...","Ranking..."];
 function runScan(){
-  readCfg();syncDisp();$("ov").classList.add("on");$("scanBtn").disabled=true;$("scanBtn").textContent="Scanning...";
+  _seed=Date.now();
+  readCfg();syncDisp();requestNotifPermission();$("ov").classList.add("on");$("scanBtn").disabled=true;$("scanBtn").textContent="Scanning...";
   var i=0;function next(){
     if(i>=STEPS.length){
       ST.alerts=UNI.map(function(s){return analyse(s);}).filter(Boolean).sort(function(a,b){return b.cf-a.cf;}).slice(0,8);
+      var out=generateEngineOutput(ST.alerts);
+      ST.portfolio=out.portfolio;
+      ST.meta=out.meta;
+      notifyEngine(ST.alerts);
       $("ov").classList.remove("on");$("scanBtn").disabled=false;$("scanBtn").textContent="Run AI Market Scan";render();return;
     }
-    $("ovS").textContent=STEPS[i];$("ovD").textContent="Processing...";i++;setTimeout(next,380+Math.random()*250);
+    $("ovS").textContent=STEPS[i];$("ovD").textContent="Processing "+UNI.length+" stocks...";i++;setTimeout(next,380+Math.random()*250);
   }
   next();
 }
@@ -449,6 +523,31 @@ function updS(){
     $("qW").textContent=Math.min(78,Math.max(55,avg*.85+5)).toFixed(1)+"%";
     $("qC").textContent=avg.toFixed(0)+"%";
   }
+  if(ST.portfolio){
+    $("qP").textContent="£"+ST.portfolio.remaining.toLocaleString();
+    $("nB").textContent="£"+ST.portfolio.remaining.toLocaleString();
+    var pn=$("qP-n");if(pn)pn.textContent="Available (£"+ST.portfolio.used+" used)";
+  }
+}
+
+// ---- JSON EXPORT ----
+function exportJSON(){
+  if(!lastEngineOutput){showToast("Run a scan first");return;}
+  var json=JSON.stringify(lastEngineOutput,null,2);
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(json).then(function(){showToast("JSON copied to clipboard");}).catch(function(){downloadJSON(json);});
+  }else{downloadJSON(json);}
+}
+function downloadJSON(json){
+  var blob=new Blob([json],{type:"application/json"});var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");a.href=url;a.download="db-ai-engine-output.json";a.click();URL.revokeObjectURL(url);
+  showToast("JSON downloaded");
+}
+function showToast(msg){var t=$("exportToast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2000);}
+
+// ---- CHANGELOG ----
+function buildChangelog(){
+  $("vChangelog").innerHTML='<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.1</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Engine</div><ul class="cl-list"><li>Structured JSON engine output matching full API spec</li><li>Seeded pseudo-random scoring for session consistency</li><li>Chart data (support/resistance) added to every alert</li><li>Timeframe classification (Day Trade / Swing / Position)</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Portfolio tracking — used/remaining budget after scan</li><li>Web Notifications for new BUY signals</li><li>JSON export button on Engine tab (copy or download)</li><li>Changelog tab added</li></ul><div class="cl-cat">Alerts</div><ul class="cl-list"><li>Notification flags per alert (entry, target, stop, news)</li><li>Improved watchlist signal handling</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><div class="cl-cat">Initial Release</div><ul class="cl-list"><li>5-layer AI reasoning engine (Technical, Fundamental, Sentiment, Patterns, Risk)</li><li>18 Nasdaq penny stocks in universe</li><li>Configurable budget, risk, and screening parameters</li><li>Alert cards with expandable analyst reasoning</li><li>PWA with offline support and iOS install prompt</li><li>Dark theme mobile-first UI</li></ul></div>';
 }
 
 // ---- BOOT ----
@@ -456,7 +555,7 @@ $("startBtn").onclick=function(){
   $("splash").classList.add("hide");
   setTimeout(function(){
     $("splash").style.display="none";$("app").classList.add("show");
-    buildSettings();buildEngine();buildTabs();buildFilters();syncDisp();
+    buildSettings();buildEngine();buildChangelog();buildTabs();buildFilters();syncDisp();
     $("scanBtn").onclick=runScan;
     if(!isStandalone&&/iPhone|iPad/.test(navigator.userAgent))setTimeout(function(){$("installBanner").classList.add("show");},1200);
   },500);
