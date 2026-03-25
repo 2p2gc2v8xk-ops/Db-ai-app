@@ -1,5 +1,5 @@
 // DB AI Bot Service Worker — handles caching + version updates
-var CACHE_NAME = 'db-ai-bot-v1.0.1';
+var CACHE_NAME = 'db-ai-bot-v1.0.2';
 var URLS = [
   './',
   './index.html',
@@ -34,7 +34,13 @@ self.addEventListener('activate', function(e) {
 });
 
 // Fetch — serve from cache, fallback to network, update cache
+// Skip caching for API calls (Alpaca, etc.)
 self.addEventListener('fetch', function(e) {
+  if (e.request.url.indexOf('alpaca.markets') !== -1 ||
+      e.request.url.indexOf('api.') !== -1) {
+    e.respondWith(fetch(e.request));
+    return;
+  }
   e.respondWith(
     caches.match(e.request).then(function(cached) {
       var fetched = fetch(e.request).then(function(response) {
