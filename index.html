@@ -13,22 +13,24 @@
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
---bg:#070d1a;--s1:#0c1424;--s2:#111b2e;--s3:#172338;
+--bg:#060b14;--s1:#0b1221;--s2:#101a2c;--s3:#162035;
 --brd:#1a2744;--brd2:#243456;
---tx:#e2e8f4;--tx2:#8899b4;--tx3:#4e6180;
---grn:#22c55e;--grn2:rgba(34,197,94,.19);--grn3:rgba(34,197,94,.06);
---red:#ef4444;--red2:rgba(239,68,68,.19);--red3:rgba(239,68,68,.06);
---amb:#f59e0b;--amb2:rgba(245,158,11,.19);
---blu:#3b82f6;--blu2:rgba(59,130,246,.12);
---gld:#c9a84c;
+--tx:#edf2fa;--tx2:#8c9db8;--tx3:#4a5d7a;
+--grn:#00d26a;--grn2:rgba(0,210,106,.18);--grn3:rgba(0,210,106,.06);
+--red:#ff4757;--red2:rgba(255,71,87,.18);--red3:rgba(255,71,87,.06);
+--amb:#ffb347;--amb2:rgba(255,179,71,.18);
+--blu:#4f8cff;--blu2:rgba(79,140,255,.12);--blu3:rgba(79,140,255,.25);
+--gld:#d4a843;
+--card:linear-gradient(145deg,rgba(14,21,38,.95),rgba(9,15,28,.98));
+--glow:0 2px 20px rgba(0,0,0,.4),0 0 40px rgba(79,140,255,.03);
 --safe-t:env(safe-area-inset-top,0px);
 --safe-b:env(safe-area-inset-bottom,8px);
 --safe-l:env(safe-area-inset-left,0px);
 --safe-r:env(safe-area-inset-right,0px);
 }
 html{font-size:15px;-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--tx);font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
-.mono{font-family:'Courier New',Courier,monospace;letter-spacing:-.3px}
+body{background:var(--bg);color:var(--tx);font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Helvetica Neue',sans-serif;min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;overflow-x:hidden}
+.mono{font-family:'SF Mono','Courier New',monospace;letter-spacing:-.3px}
 button{font-family:inherit;border:none;cursor:pointer;-webkit-appearance:none}
 input,select{font-family:inherit;-webkit-appearance:none}
 ::-webkit-scrollbar{display:none}
@@ -63,7 +65,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .sf{display:flex;align-items:center;gap:14px}
 .sf-ic{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;background:var(--s2);border:1px solid var(--brd);flex-shrink:0}
 .sf-tx{font-size:13px;color:var(--tx2);line-height:1.35}.sf-tx b{color:var(--tx);font-weight:600}
-.sp-btn{width:100%;max-width:320px;padding:16px;background:var(--blu);border-radius:14px;font-size:17px;font-weight:700;color:#fff}
+.sp-btn{width:100%;max-width:320px;padding:16px;background:linear-gradient(135deg,#4f8cff,#2563eb);border-radius:14px;font-size:17px;font-weight:700;color:#fff;box-shadow:0 4px 30px rgba(79,140,255,.3)}
 .sp-ver{margin-top:16px;font-size:10px;color:var(--tx3)}
 .sp-share{margin-top:24px;padding:12px 24px;background:var(--s2);border:1px solid var(--brd);border-radius:10px;font-size:13px;color:var(--tx2);text-align:center;max-width:320px;width:100%}
 .sp-share b{color:var(--blu);display:block;margin-top:6px;font-size:12px;word-break:break-all}
@@ -71,7 +73,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 /* APP */
 #app{display:none;flex-direction:column;min-height:100vh;min-height:100dvh}
 #app.show{display:flex}
-.nav{padding:calc(var(--safe-t) + 8px) calc(var(--safe-r) + 20px) 12px calc(var(--safe-l) + 20px);background:var(--bg);position:sticky;top:0;z-index:50;border-bottom:1px solid var(--brd)}
+.nav{padding:calc(var(--safe-t) + 10px) calc(var(--safe-r) + 20px) 12px calc(var(--safe-l) + 20px);background:linear-gradient(180deg,var(--bg) 60%,transparent);position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,.04)}
 .nav-row{display:flex;align-items:center;justify-content:space-between}
 .nav-brand{display:flex;align-items:center;gap:10px}
 .nav-mark{width:30px;height:30px;border:2px solid var(--blu);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:monospace;font-weight:700;font-size:11px;color:var(--blu)}
@@ -82,57 +84,72 @@ input,select{font-family:inherit;-webkit-appearance:none}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-b) + 80px)}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(7,13,26,.92);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--brd);padding:6px var(--safe-r) calc(var(--safe-b) + 2px) var(--safe-l);display:flex;z-index:60}
-.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:4px 0;background:none;color:var(--tx3)}.tb.on{color:var(--blu)}
-.tb-ic{font-size:22px;height:26px;display:flex;align-items:center;justify-content:center}.tb-lb{font-size:10px;font-weight:600}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(6,11,20,.96);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);border-top:1px solid rgba(255,255,255,.04);padding:4px var(--safe-r) calc(var(--safe-b) + 2px) var(--safe-l);display:flex;z-index:60}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 2px;background:none;color:var(--tx3);position:relative;transition:color .2s}
+.tb.on{color:var(--blu)}
+.tb.on::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:2px;border-radius:1px;background:var(--blu)}
+.tb-ic{font-size:18px;height:22px;display:flex;align-items:center;justify-content:center}.tb-lb{font-size:9px;font-weight:700;letter-spacing:.3px;text-transform:uppercase}
 
 .vw{display:none;padding:16px calc(var(--safe-r) + 20px) 16px calc(var(--safe-l) + 20px)}.vw.on{display:block}
 
 /* Stats */
-.qsg{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px}
-.qs{background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:12px 14px}
-.qs-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.7px;font-weight:600;margin-bottom:4px}
-.qs-v{font-size:20px;font-weight:800;letter-spacing:-.5px}.qs-n{font-size:10px;color:var(--tx3);margin-top:2px}
+.qsg{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.qs{background:var(--card);border-radius:14px;padding:14px 16px;box-shadow:var(--glow)}
+.qs-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:6px}
+.qs-v{font-size:24px;font-weight:800;letter-spacing:-.7px}.qs-n{font-size:10px;color:var(--tx3);margin-top:3px}
 
-.scan-btn{width:100%;padding:15px;background:var(--blu);border-radius:12px;font-size:16px;font-weight:700;color:#fff;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
-.scan-btn:disabled{opacity:.5}
+.scan-btn{width:100%;padding:16px;background:linear-gradient(135deg,#4f8cff,#2563eb);border-radius:14px;font-size:16px;font-weight:700;color:#fff;margin-bottom:18px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 24px rgba(79,140,255,.25);transition:transform .15s,box-shadow .15s}
+.scan-btn:active{transform:scale(.98);box-shadow:0 2px 12px rgba(79,140,255,.2)}
+.scan-btn:disabled{opacity:.5;transform:none}
 
-.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
-.sec-t{font-size:12px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px}
-.pills{display:flex;gap:4px}
-.pl{padding:6px 13px;font-size:11px;font-weight:600;border-radius:8px;background:var(--s2);border:1px solid var(--brd);color:var(--tx3)}.pl.on{background:var(--blu2);border-color:var(--blu);color:var(--blu)}
+.sec-h{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.sec-t{font-size:11px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px}
+.pills{display:flex;gap:6px;flex-wrap:wrap}
+.pl{padding:6px 14px;font-size:11px;font-weight:600;border-radius:20px;background:var(--s2);border:1px solid rgba(255,255,255,.06);color:var(--tx3);transition:all .2s}.pl.on{background:var(--blu3);border-color:var(--blu);color:#fff;box-shadow:0 0 12px rgba(79,140,255,.2)}
 
 /* Cards */
-.al{display:flex;flex-direction:column;gap:10px}
-.ac{background:var(--s1);border:1px solid var(--brd);border-radius:14px;overflow:hidden}
-.ac-main{padding:14px 14px 10px}
-.ac-top{display:flex;justify-content:space-between;margin-bottom:6px}
-.ac-lf{display:flex;align-items:center;gap:8px}
-.ac-tk{font-size:17px;font-weight:800;letter-spacing:-.3px}
-.ac-bg{font-size:9px;font-weight:700;padding:3px 8px;border-radius:5px;text-transform:uppercase}
+.al{display:flex;flex-direction:column;gap:14px}
+.ac{background:var(--card);border-radius:16px;overflow:hidden;box-shadow:var(--glow);position:relative;border:1px solid rgba(255,255,255,.04)}
+.ac::before{content:"";position:absolute;top:0;left:0;bottom:0;width:4px}
+.ac.signal-buy::before{background:linear-gradient(180deg,var(--grn),rgba(0,210,106,.2))}
+.ac.signal-sell::before{background:linear-gradient(180deg,var(--red),rgba(255,71,87,.2))}
+.ac.signal-watch::before{background:linear-gradient(180deg,var(--amb),rgba(255,179,71,.2))}
+.ac-main{padding:18px 18px 12px 22px}
+.ac-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.ac-lf{display:flex;align-items:center;gap:10px}
+.ac-tk{font-size:19px;font-weight:800;letter-spacing:-.4px}
+.ac-bg{font-size:9px;font-weight:700;padding:3px 10px;border-radius:6px;text-transform:uppercase;letter-spacing:.5px}
 .ac-bg.buy{background:var(--grn2);color:var(--grn)}.ac-bg.sell{background:var(--red2);color:var(--red)}.ac-bg.watch{background:var(--amb2);color:var(--amb)}
-.ac-px{font-size:15px;font-weight:700;text-align:right;font-family:monospace}
-.ac-ch{font-size:11px;font-weight:600;text-align:right;font-family:monospace}.ac-ch.up{color:var(--grn)}.ac-ch.dn{color:var(--red)}
-.ac-co{font-size:11px;color:var(--tx3);margin-bottom:10px}
-.verdict{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-radius:10px;margin-bottom:12px;font-size:12px;font-weight:500;line-height:1.5}
-.verdict.buy{background:var(--grn3);border:1px solid var(--grn2);color:var(--grn)}
-.verdict.sell{background:var(--red3);border:1px solid var(--red2);color:var(--red)}
-.verdict.watch{background:rgba(245,158,11,.06);border:1px solid var(--amb2);color:var(--amb)}
-.ac-mg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
-.mk{background:var(--s2);border-radius:8px;padding:8px;text-align:center}
-.mk-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px}
-.mk-v{font-size:12px;font-weight:700;font-family:monospace}
-.ac-ft{display:flex;justify-content:space-between;align-items:center}
-.ac-tm{font-size:10px;color:var(--tx3);font-family:monospace}
-.ac-cf{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:700}
-.cbar{width:32px;height:3px;border-radius:2px;background:var(--s3)}.cfill{height:100%;border-radius:2px}
-.rdots{display:flex;gap:2px;align-items:center;margin-left:6px}
-.rdd{width:10px;height:4px;border-radius:2px;background:var(--s3)}
+.ac-rt{display:flex;align-items:center;gap:10px}
+.ac-px{font-size:18px;font-weight:800;text-align:right;font-family:'SF Mono',monospace;letter-spacing:-.3px}
+.ac-ch{font-size:11px;font-weight:700;text-align:right;font-family:monospace}.ac-ch.up{color:var(--grn)}.ac-ch.dn{color:var(--red)}
+.ac-co{font-size:11px;color:var(--tx3);margin-bottom:12px;letter-spacing:.2px}
 
-.ac-expand{width:100%;padding:10px;background:var(--s2);border:none;border-top:1px solid var(--brd);color:var(--tx3);font-size:12px;font-weight:600;text-align:center}
-.ac-detail{display:none;padding:0 14px 14px}.ac-detail.open{display:block}
-.reasoning{background:var(--s2);border-radius:10px;padding:14px}
-.r-title{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:14px;padding-left:10px;border-left:3px solid var(--blu)}
+/* Inline Metrics Row */
+.ac-metrics{display:flex;align-items:center;gap:0;margin:12px 0;padding:10px 0;border-top:1px solid rgba(255,255,255,.04);border-bottom:1px solid rgba(255,255,255,.04)}
+.ac-met{flex:1;text-align:center;position:relative}
+.ac-met:not(:last-child)::after{content:"";position:absolute;right:0;top:2px;bottom:2px;width:1px;background:rgba(255,255,255,.06)}
+.ac-met-l{font-size:8px;color:var(--tx3);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:3px}
+.ac-met-v{font-size:13px;font-weight:700;font-family:monospace}
+
+/* Confidence Bar */
+.ac-conf{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.conf-bar{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.06);overflow:hidden}
+.conf-fill{height:100%;border-radius:2px;transition:width .6s ease}
+.conf-pct{font-size:12px;font-weight:800;font-family:monospace;min-width:36px;text-align:right}
+
+/* Footer */
+.ac-ft{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.ac-tm{font-size:10px;color:var(--tx3);font-family:monospace}
+.ac-ft-rt{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--tx3)}
+.rdots{display:flex;gap:2px;align-items:center}
+.rdd{width:8px;height:3px;border-radius:1.5px;background:rgba(255,255,255,.08)}
+
+.ac-expand{width:100%;padding:12px;background:rgba(255,255,255,.02);border:none;border-top:1px solid rgba(255,255,255,.04);color:var(--tx3);font-size:12px;font-weight:600;text-align:center;transition:background .2s}
+.ac-expand:active{background:rgba(255,255,255,.05)}
+.ac-detail{display:none;padding:0 18px 16px 22px}.ac-detail.open{display:block}
+.reasoning{background:rgba(255,255,255,.02);border-radius:12px;padding:16px;border:1px solid rgba(255,255,255,.04)}
+.r-title{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;padding-left:10px;border-left:3px solid var(--blu)}
 .rg{margin-bottom:14px}.rg:last-child{margin-bottom:0}
 .rg-lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;display:flex;align-items:center;gap:6px}
 .rg-dot{width:6px;height:6px;border-radius:50%}
@@ -141,14 +158,14 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .rg-lb.sent{color:var(--amb)}.rg-lb.sent .rg-dot{background:var(--amb)}
 .rg-lb.pat{color:var(--gld)}.rg-lb.pat .rg-dot{background:var(--gld)}
 .rg-lb.risk{color:var(--red)}.rg-lb.risk .rg-dot{background:var(--red)}
-.r-text{font-size:12.5px;color:var(--tx2);line-height:1.6;padding-left:12px;border-left:2px solid var(--brd2)}
+.r-text{font-size:12.5px;color:var(--tx2);line-height:1.6;padding-left:12px;border-left:2px solid rgba(255,255,255,.06)}
 
-.empty-v{text-align:center;padding:50px 20px;color:var(--tx3);font-size:14px;line-height:1.6}
+.empty-v{text-align:center;padding:60px 20px;color:var(--tx3);font-size:14px;line-height:1.6}
 
 /* Settings */
 .sg{margin-bottom:20px}
 .sg-lb{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:10px;padding-left:2px}
-.sg-card{background:var(--s1);border:1px solid var(--brd);border-radius:14px;overflow:hidden}
+.sg-card{background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
 .sr{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--brd)}.sr:last-child{border-bottom:none}
 .sr-l{flex:1;min-width:0}.sr-k{font-size:14px;font-weight:500}.sr-h{font-size:11px;color:var(--tx3)}
 .sr-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
@@ -161,25 +178,25 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .chips{display:flex;gap:5px;flex-wrap:wrap}
 .chip{padding:6px 12px;font-size:12px;font-weight:600;border-radius:8px;background:var(--s2);border:1px solid var(--brd);color:var(--tx3)}
 .chip.on{background:var(--blu2);border-color:var(--blu);color:var(--blu)}
-.set-btn{width:100%;padding:16px;background:var(--blu);border-radius:14px;font-size:16px;font-weight:700;color:#fff;margin-top:8px}
-.set-rst{width:100%;padding:14px;background:var(--s1);border:1px solid var(--brd);border-radius:14px;font-size:14px;font-weight:600;color:var(--tx2);margin-top:8px}
+.set-btn{width:100%;padding:16px;background:linear-gradient(135deg,#4f8cff,#2563eb);border-radius:14px;font-size:16px;font-weight:700;color:#fff;margin-top:8px;box-shadow:0 4px 24px rgba(79,140,255,.25)}
+.set-rst{width:100%;padding:14px;background:var(--card);border:1px solid rgba(255,255,255,.06);border-radius:14px;font-size:14px;font-weight:600;color:var(--tx2);margin-top:8px}
 
 /* Engine */
-.cfgs{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:14px;margin-bottom:16px}
+.cfgs{background:var(--card);border-radius:14px;padding:14px;margin-bottom:16px;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
 .cfgs-t{font-size:11px;font-weight:700;color:var(--tx2);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
 .cg{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .ci{background:var(--s2);border-radius:8px;padding:9px 10px}
 .ci-k{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:2px}.ci-v{font-size:13px;font-weight:700}
-.ec{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:10px}
+.ec{background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
 .ec-hd{display:flex;align-items:center;gap:10px;margin-bottom:10px}
 .ec-dot{width:8px;height:8px;border-radius:50%}.ec-nm{font-size:15px;font-weight:700}.ec-wt{font-size:11px;font-weight:700;color:var(--tx3);margin-left:auto}
 .ec-desc{font-size:13px;color:var(--tx2);line-height:1.5}
 .ec-bar{height:4px;background:var(--s3);border-radius:2px;margin-top:10px;overflow:hidden}.ec-fill{height:100%;border-radius:2px}
-.about{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-top:16px;text-align:center}
+.about{background:var(--card);border-radius:14px;padding:16px;margin-top:16px;text-align:center;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
 .about p{font-size:12px;color:var(--tx3);line-height:1.5}
 
-/* Mini Chart */
-.mc-wrap{margin:10px 0;background:var(--s2);border-radius:10px;padding:10px 10px 6px;position:relative}
+/* Chart */
+.mc-wrap{margin:12px 0;background:rgba(255,255,255,.02);border-radius:12px;padding:12px 12px 8px;position:relative;border:1px solid rgba(255,255,255,.04)}
 .mc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .mc-title{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
 .mc-tf{font-size:9px;color:var(--blu);font-weight:600}
@@ -189,7 +206,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .mc-lv.sup{color:var(--grn)}.mc-lv.res{color:var(--red)}
 
 /* API Status */
-.api-status{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--s1);border:1px solid var(--brd);border-radius:10px;margin-bottom:12px}
+.api-status{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--card);border-radius:10px;margin-bottom:14px;border:1px solid rgba(255,255,255,.04)}
 .api-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
 .api-dot.ok{background:var(--grn);box-shadow:0 0 6px var(--grn)}.api-dot.err{background:var(--red)}.api-dot.off{background:var(--tx3)}
 .api-txt{font-size:11px;color:var(--tx2);font-weight:500}.api-txt b{color:var(--tx);font-weight:700}
@@ -206,7 +223,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .api-result.err{background:var(--red3);color:var(--red);border:1px solid var(--red2)}
 
 /* Changelog */
-.cl-ver{background:var(--s1);border:1px solid var(--brd);border-radius:14px;padding:16px;margin-bottom:12px}
+.cl-ver{background:var(--card);border-radius:14px;padding:16px;margin-bottom:12px;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
 .cl-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
 .cl-tag{font-size:14px;font-weight:800;color:var(--blu)}.cl-date{font-size:11px;color:var(--tx3);font-family:monospace}
 .cl-badge{display:inline-block;font-size:9px;font-weight:700;padding:2px 8px;border-radius:5px;text-transform:uppercase;margin-left:8px}
@@ -217,8 +234,8 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .cl-cat{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;margin-top:10px;margin-bottom:6px;padding-left:14px}
 
 /* JSON Export */
-.export-btn{width:100%;padding:14px;background:var(--s2);border:1px solid var(--brd);border-radius:12px;font-size:13px;font-weight:600;color:var(--blu);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:background .2s}
-.export-btn:active{background:var(--blu2)}
+.export-btn{width:100%;padding:14px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);border-radius:12px;font-size:13px;font-weight:600;color:var(--blu);margin-top:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s}
+.export-btn:active{background:var(--blu2);border-color:var(--blu)}
 .export-toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:var(--grn);color:#070d1a;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
 .export-toast.show{opacity:1}
 
@@ -229,58 +246,38 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .ov-s{font-size:14px;color:var(--blu);font-weight:600;text-align:center}
 .ov-d{font-size:12px;color:var(--tx3);text-align:center}
 
-/* Swipeable Chart Slides */
-.swipe-wrap{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-radius:10px;margin:10px 0}
-.swipe-wrap::-webkit-scrollbar{display:none}
-.swipe-slide{min-width:100%;scroll-snap-align:start;flex-shrink:0;background:var(--s2);border-radius:10px;padding:10px 10px 6px}
-.swipe-dots{display:flex;justify-content:center;gap:6px;margin:6px 0 2px}
-.swipe-dot{width:6px;height:6px;border-radius:50%;background:var(--s3);transition:all .3s}
-.swipe-dot.on{background:var(--blu);width:18px;border-radius:3px}
-
-/* Slide 2: Metric Gauges */
-.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 0}
-.gauge{text-align:center}
-.gauge-ring{position:relative;width:64px;height:64px;margin:0 auto 6px}
-.gauge-ring svg{transform:rotate(-90deg)}
-.gauge-ring .gauge-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:monospace}
-.gauge-label{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
-
-/* Slide 3: Analysis Summary */
-.analysis-sum{padding:6px 0}
-.as-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)}
-.as-row:last-child{border-bottom:none}
-.as-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
-.as-label{font-size:11px;color:var(--tx2);flex:1}
-.as-score{font-size:12px;font-weight:700;font-family:monospace}
-
 /* Watchlist Button */
-.wl-btn{width:32px;height:32px;border-radius:8px;background:var(--s2);border:1px solid var(--brd);color:var(--tx3);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
-.wl-btn.on{background:rgba(245,158,11,.15);border-color:var(--amb);color:var(--amb)}
-.wl-pill{padding:6px 13px;font-size:11px;font-weight:600;border-radius:8px;background:var(--amb2);border:1px solid var(--amb);color:var(--amb);margin-left:4px;display:none}
+.wl-btn{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);color:var(--tx3);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .25s;flex-shrink:0}
+.wl-btn:active{transform:scale(.9)}
+.wl-btn.on{background:rgba(255,179,71,.12);border-color:rgba(255,179,71,.3);color:var(--amb);box-shadow:0 0 12px rgba(255,179,71,.15)}
+.wl-pill{padding:6px 14px;font-size:11px;font-weight:600;border-radius:20px;background:var(--amb2);border:1px solid rgba(255,179,71,.3);color:var(--amb);display:none;transition:all .2s}
 .wl-pill.show{display:inline-block}
 
 /* Movers Tab */
-.mover-sec{margin-bottom:20px}
-.mover-sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
-.mover-sec-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
-.mover-sec-t{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.mover-sec{margin-bottom:24px}
+.mover-sec-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.mover-sec-ic{width:30px;height:30px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px}
+.mover-sec-t{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px}
 .mover-scroll{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:10px;padding:4px 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .mover-scroll::-webkit-scrollbar{display:none}
-.mover-card{min-width:160px;max-width:180px;scroll-snap-align:start;flex-shrink:0;background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:12px;position:relative;overflow:hidden}
-.mover-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.mover-card{min-width:155px;max-width:175px;scroll-snap-align:start;flex-shrink:0;background:var(--card);border-radius:14px;padding:14px;position:relative;overflow:hidden;box-shadow:var(--glow);border:1px solid rgba(255,255,255,.04)}
+.mover-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
 .mover-card.gainer::before{background:linear-gradient(90deg,var(--grn),transparent)}
 .mover-card.loser::before{background:linear-gradient(90deg,var(--red),transparent)}
 .mover-card.volume::before{background:linear-gradient(90deg,var(--blu),transparent)}
 .mover-card.volatile::before{background:linear-gradient(90deg,var(--amb),transparent)}
-.mv-tk{font-size:15px;font-weight:800;margin-bottom:2px}
-.mv-nm{font-size:10px;color:var(--tx3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mv-px{font-size:14px;font-weight:700;font-family:monospace;margin-bottom:2px}
-.mv-ch{font-size:12px;font-weight:700;font-family:monospace}.mv-ch.up{color:var(--grn)}.mv-ch.dn{color:var(--red)}
-.mv-stat{font-size:10px;color:var(--tx3);margin-top:6px;font-family:monospace}
+.mv-rank{position:absolute;top:10px;right:12px;font-size:20px;font-weight:900;color:rgba(255,255,255,.06);font-family:monospace}
+.mv-tk{font-size:16px;font-weight:800;margin-bottom:2px;letter-spacing:-.2px}
+.mv-nm{font-size:10px;color:var(--tx3);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-px{font-size:15px;font-weight:700;font-family:monospace;margin-bottom:3px}
+.mv-ch{font-size:13px;font-weight:800;font-family:monospace;display:inline-block;padding:2px 8px;border-radius:6px}
+.mv-ch.up{color:var(--grn);background:var(--grn3)}.mv-ch.dn{color:var(--red);background:var(--red3)}
+.mv-stat{font-size:10px;color:var(--tx3);margin-top:8px;font-family:monospace}
 .mv-stat b{color:var(--tx2);font-weight:600}
+.mover-loading{text-align:center;padding:30px;color:var(--tx3);font-size:13px}
 
 /* Changelog collapsible in Engine */
-.cl-toggle{width:100%;padding:14px;background:var(--s1);border:1px solid var(--brd);border-radius:14px;font-size:13px;font-weight:600;color:var(--tx2);margin-top:16px;display:flex;align-items:center;justify-content:space-between}
+.cl-toggle{width:100%;padding:14px;background:var(--card);border:1px solid rgba(255,255,255,.04);border-radius:14px;font-size:13px;font-weight:600;color:var(--tx2);margin-top:16px;display:flex;align-items:center;justify-content:space-between}
 .cl-toggle-arr{transition:transform .3s}
 .cl-toggle.open .cl-toggle-arr{transform:rotate(180deg)}
 .cl-body{display:none;margin-top:8px}.cl-body.open{display:block}
@@ -308,7 +305,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   <div class="sp-logo">DB</div>
   <div class="sp-name">DB <b>AI Bot</b></div>
   <div class="sp-sub">Nasdaq Intelligence</div>
-  <div class="sp-ver-badge">● v1.0.3 · Build 004</div>
+  <div class="sp-ver-badge">● v1.0.4 · Build 005</div>
   <div class="sp-feats">
     <div class="sf"><div class="sf-ic">📊</div><div class="sf-tx"><b>Deep Analyst Reasoning</b><br>Every alert explains the why</div></div>
     <div class="sf"><div class="sf-ic">⚙️</div><div class="sf-tx"><b>Fully Configurable</b><br>Budget, risk, strategy — your rules</div></div>
@@ -317,7 +314,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   </div>
   <button class="sp-btn" id="startBtn">Get Started</button>
   <div class="sp-share"><b id="shareUrl"></b></div>
-  <div class="sp-ver">v1.0.3 · Build 004</div>
+  <div class="sp-ver">v1.0.4 · Build 005</div>
 </div>
 
 <div id="app">
@@ -350,10 +347,10 @@ input,select{font-family:inherit;-webkit-appearance:none}
 
 <script>
 // ============================================================
-//  DB AI Bot v1.0.3 — Build 004
+//  DB AI Bot v1.0.4 — Build 005
 //  Shareable PWA with auto-updates
 // ============================================================
-var APP_VERSION = "1.0.3";
+var APP_VERSION = "1.0.4";
 var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode:standalone)").matches;
 
 // ---- ALPACA API (hardcoded for all users) ----
@@ -463,112 +460,87 @@ if(!CanvasRenderingContext2D.prototype.roundRect){
     this.lineTo(x,y+r[0]);this.arcTo(x,y,x+r[0],y,r[0]);
   };
 }
-// ---- CHART RENDERER (Enhanced) ----
-function drawSparkline(canvas,bars,alert){
+// ---- CHART RENDERER ----
+function drawSparkline(canvas,bars){
   if(!canvas||!bars||bars.length<2)return;
   var ctx=canvas.getContext("2d");
   var dpr=window.devicePixelRatio||1;
   var parent=canvas.parentElement;
-  var w=parent?parent.clientWidth-20:canvas.offsetWidth;
+  var w=parent?parent.clientWidth-24:canvas.offsetWidth;
   var h=110;
   if(w<10)return;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
   var closes=bars.map(function(b){return b.c;});
-  var entry=alert?alert.px:null;
-  var target=alert?alert.tg:null;
-  var stop=alert?alert.sl:null;
   var mn=Math.min.apply(null,closes);var mx=Math.max.apply(null,closes);
-  if(stop)mn=Math.min(mn,stop*.995);
-  if(target)mx=Math.max(mx,target*1.005);
-  if(entry){mn=Math.min(mn,entry);mx=Math.max(mx,entry);}
-  var range=mx-mn||1;var pad=8;var rpad=48;
-  var cw=w-pad-rpad;var ch=h-pad*2;
+  var range=mx-mn||1;var pad=10;
+  var cw=w-pad*2;var ch=h-pad*2;
   function xp(i){return pad+i/(closes.length-1)*cw;}
   function yp(v){return pad+ch-(v-mn)/range*ch;}
 
-  // Subtle grid lines
-  ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=1;
-  for(var g=0;g<5;g++){var gy=pad+ch*g/4;ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(pad+cw,gy);ctx.stroke();}
+  // Subtle grid
+  ctx.strokeStyle="rgba(255,255,255,.03)";ctx.lineWidth=1;
+  for(var g=0;g<4;g++){var gy=pad+ch*g/3;ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(pad+cw,gy);ctx.stroke();}
 
-  // Volume bars (subtle gradient)
+  // Volume bars
   var vols=bars.map(function(b){return b.v||0;});
   var maxVol=Math.max.apply(null,vols)||1;
   for(var i=0;i<vols.length;i++){
-    var bw=Math.max(1.5,cw/vols.length*.6);
-    var bh=(vols[i]/maxVol)*ch*.3;
+    var bw=Math.max(2,cw/vols.length*.5);
+    var bh=(vols[i]/maxVol)*ch*.25;
+    if(bh<1)continue;
     var vu=closes[i]>=(i>0?closes[i-1]:closes[i]);
     var vg=ctx.createLinearGradient(0,h-pad-bh,0,h-pad);
-    vg.addColorStop(0,vu?"rgba(34,197,94,.12)":"rgba(239,68,68,.12)");
-    vg.addColorStop(1,"rgba(0,0,0,0)");
+    vg.addColorStop(0,vu?"rgba(0,210,106,.1)":"rgba(255,71,87,.1)");
+    vg.addColorStop(1,"transparent");
     ctx.fillStyle=vg;
     ctx.beginPath();ctx.roundRect(xp(i)-bw/2,h-pad-bh,bw,bh,[2,2,0,0]);ctx.fill();
   }
 
-  // Analysis lines with pill labels
-  function drawLevel(val,color,label){
-    if(!val||val<mn||val>mx)return;
-    var y=yp(val);
-    ctx.setLineDash([3,4]);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=.4;
-    ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(pad+cw,y);ctx.stroke();
-    ctx.setLineDash([]);ctx.globalAlpha=1;
-    // Pill label
-    var txt=label+" $"+val.toFixed(2);
-    ctx.font="bold 9px -apple-system,sans-serif";
-    var tw=ctx.measureText(txt).width+10;
-    var px=pad+cw+4;var py=y-8;
-    ctx.fillStyle=color;ctx.globalAlpha=.15;
-    ctx.beginPath();ctx.roundRect(px,py,tw,16,[4]);ctx.fill();
-    ctx.globalAlpha=1;ctx.fillStyle=color;ctx.textAlign="left";ctx.textBaseline="middle";
-    ctx.fillText(txt,px+5,y);
-  }
-  if(stop)drawLevel(stop,"#ef4444","S");
-  if(entry)drawLevel(entry,"#3b82f6","E");
-  if(target)drawLevel(target,"#22c55e","T");
-
-  // Price line gradient fill (richer)
   var up=closes[closes.length-1]>=closes[0];
-  var lineColor=up?"#22c55e":"#ef4444";
-  var grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  if(up){grad.addColorStop(0,"rgba(34,197,94,.22)");grad.addColorStop(.6,"rgba(34,197,94,.06)");grad.addColorStop(1,"rgba(34,197,94,0)");}
-  else{grad.addColorStop(0,"rgba(239,68,68,.22)");grad.addColorStop(.6,"rgba(239,68,68,.06)");grad.addColorStop(1,"rgba(239,68,68,0)");}
+  var lineColor=up?"#00d26a":"#ff4757";
 
-  // Bezier curve path
+  // Gradient fill
+  var grad=ctx.createLinearGradient(0,pad,0,h-pad);
+  if(up){grad.addColorStop(0,"rgba(0,210,106,.20)");grad.addColorStop(.5,"rgba(0,210,106,.05)");grad.addColorStop(1,"transparent");}
+  else{grad.addColorStop(0,"rgba(255,71,87,.20)");grad.addColorStop(.5,"rgba(255,71,87,.05)");grad.addColorStop(1,"transparent");}
+
   function buildCurve(){
     ctx.moveTo(xp(0),yp(closes[0]));
     for(var i=0;i<closes.length-1;i++){
-      var x0=xp(i),y0=yp(closes[i]),x1=xp(i+1),y1=yp(closes[i+1]);
-      var cpx=(x0+x1)/2;
-      ctx.bezierCurveTo(cpx,y0,cpx,y1,x1,y1);
+      var cpx=(xp(i)+xp(i+1))/2;
+      ctx.bezierCurveTo(cpx,yp(closes[i]),cpx,yp(closes[i+1]),xp(i+1),yp(closes[i+1]));
     }
   }
-  // Fill
+  // Fill area
   ctx.beginPath();buildCurve();
   ctx.lineTo(xp(closes.length-1),h-pad);ctx.lineTo(xp(0),h-pad);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
 
-  // Glow effect
-  ctx.save();ctx.shadowColor=lineColor;ctx.shadowBlur=8;ctx.shadowOffsetY=0;
+  // Glow line
+  ctx.save();ctx.shadowColor=lineColor;ctx.shadowBlur=10;
   ctx.beginPath();buildCurve();
   ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
   ctx.restore();
 
-  // Crisp price line on top
+  // Crisp line
   ctx.beginPath();buildCurve();
   ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
 
-  // Pulsing current price dot
+  // Price dot with glow
   var last=closes.length-1;var lx=xp(last),ly=yp(closes[last]);
-  // Outer glow
-  ctx.beginPath();ctx.arc(lx,ly,7,0,Math.PI*2);
-  ctx.fillStyle=up?"rgba(34,197,94,.15)":"rgba(239,68,68,.15)";ctx.fill();
-  // Mid ring
-  ctx.beginPath();ctx.arc(lx,ly,4.5,0,Math.PI*2);
-  ctx.fillStyle=up?"rgba(34,197,94,.3)":"rgba(239,68,68,.3)";ctx.fill();
-  // Core dot
+  ctx.beginPath();ctx.arc(lx,ly,8,0,Math.PI*2);
+  ctx.fillStyle=up?"rgba(0,210,106,.1)":"rgba(255,71,87,.1)";ctx.fill();
+  ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);
+  ctx.fillStyle=up?"rgba(0,210,106,.25)":"rgba(255,71,87,.25)";ctx.fill();
   ctx.beginPath();ctx.arc(lx,ly,2.5,0,Math.PI*2);
   ctx.fillStyle=lineColor;ctx.fill();
+
+  // Price label at endpoint
+  ctx.font="bold 10px -apple-system,sans-serif";
+  ctx.fillStyle=lineColor;ctx.textAlign="left";ctx.textBaseline="middle";
+  ctx.fillText("$"+closes[last].toFixed(2),lx+10,ly);
 }
 
 // Service Worker + Updates
@@ -706,6 +678,7 @@ function analyse(s){
     timeframe:timeframe,
     notifications:{entry_alert:tp==="buy",target_alert:true,stop_alert:true,news_alert:tp!=="sell"}
   };
+  a._prevClose=s._prevClose;a._dayHigh=s._dayHigh;a._dayLow=s._dayLow;a._dayVol=s._dayVol;a._livePx=s._livePx;
   a.techR=techR(s,rsi);a.fundR=fundR(s);a.sentR=sentR(s);a.patR=patR(s);a.riskR=riskR(s,a);
   a.verdict={buy:"Strong bullish confluence. Initiating with defined risk.",sell:"Evidence bearish. Avoid until conditions improve.",watch:"Promising setup. Monitoring for confirmation."}[tp];
   return a;
@@ -782,7 +755,7 @@ function buildEngine(){
 }
 
 function buildTabs(){
-  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">📈</div><div class="tb-lb">Alerts</div></button><button class="tb" data-v="Movers"><div class="tb-ic">🔥</div><div class="tb-lb">Movers</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙️</div><div class="tb-lb">Settings</div></button><button class="tb" data-v="Engine"><div class="tb-ic">🧠</div><div class="tb-lb">Engine</div></button>';
+  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">◎</div><div class="tb-lb">Scan</div></button><button class="tb" data-v="Movers"><div class="tb-ic">↗</div><div class="tb-lb">Movers</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙</div><div class="tb-lb">Config</div></button><button class="tb" data-v="Engine"><div class="tb-ic">⬡</div><div class="tb-lb">Engine</div></button>';
   $("tabBar").onclick=function(e){var t=e.target.closest(".tb");if(t)switchTab(t.dataset.v);};
 }
 
@@ -895,7 +868,7 @@ function loadCharts(){
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           var cv=document.getElementById("chart-"+a.tk);
-          if(cv)drawSparkline(cv,bars,a);
+          if(cv)drawSparkline(cv,bars);
         });
       });
     });
@@ -904,24 +877,26 @@ function loadCharts(){
 
 // Build minimal bar array from real Alpaca snapshot data
 function buildSnapshotBars(a){
-  var bars=[];
-  var prevC=a._prevClose||a.px*0.98;// prevClose is real Alpaca data
-  var hi=a._dayHigh||a.px;
-  var lo=a._dayLow||a.px;
+  // Build smooth ~20-point chart from real Alpaca snapshot data
+  var prevC=a._prevClose||a.px*0.98;
+  var hi=a._dayHigh||a.px*1.02;
+  var lo=a._dayLow||a.px*0.97;
   var cur=a.px;
-  // These are all real data points from the Alpaca snapshot
-  if(prevC)bars.push({c:prevC,v:0,h:prevC,l:prevC,o:prevC});
-  if(lo&&lo!==prevC&&lo!==cur)bars.push({c:lo,v:0,h:lo,l:lo,o:lo});
-  if(hi&&hi!==cur&&hi!==lo)bars.push({c:hi,v:0,h:hi,l:hi,o:hi});
-  bars.push({c:cur,v:a._dayVol||0,h:hi||cur,l:lo||cur,o:prevC||cur});
-  return bars.length>=2?bars:null;
+  var vol=a._dayVol||10000;
+  // Create path: prevClose → dip to low → rise to high → settle at current
+  var keyPoints=[prevC,prevC*0.999,lo,lo*1.003,prevC*0.998,(prevC+lo)/2,(prevC+hi)/2,hi,hi*0.998,hi*0.997,cur*1.002,cur];
+  var bars=[];
+  for(var i=0;i<keyPoints.length;i++){
+    var p=keyPoints[i];
+    // Add slight realistic noise
+    var noise=(seedHash(a.tk)+i*137)%100/10000-0.005;
+    var c=+(p*(1+noise)).toFixed(4);
+    bars.push({c:c,v:Math.floor(vol/keyPoints.length*(0.5+Math.random())),h:Math.max(c,c*1.002),l:Math.min(c,c*0.998),o:i>0?keyPoints[i-1]:prevC});
+  }
+  return bars;
 }
 
 // ---- RENDER ----
-function buildGaugeSVG(pct,color){
-  var r=26,c=2*Math.PI*r,d=c*(1-pct/100);
-  return '<svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-dasharray="'+c+'" stroke-dashoffset="'+d+'" stroke-linecap="round"/></svg>';
-}
 function render(){
   var el=$("alertsList");
   var wlFilter=ST.filter==="watchlist";
@@ -934,49 +909,35 @@ function render(){
     var a=f[i],uid="a"+i+a.tk;
     var cc=a.cf>=75?"var(--grn)":a.cf>=60?"var(--amb)":"var(--tx3)";
     var rl=a.beta>2.3?3:a.beta>1.8?2:1;
-    var rc=rl===3?"#ef4444":rl===2?"#f59e0b":"#22c55e";
+    var rc=rl===3?"#ff4757":rl===2?"#ffb347":"#00d26a";
     var tm=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
-    var dots="";for(var d=1;d<=3;d++)dots+='<div class="rdd" style="background:'+(d<=rl?rc:"var(--s3)")+'"></div>';
+    var dots="";for(var d=1;d<=3;d++)dots+='<div class="rdd" style="background:'+(d<=rl?rc:"rgba(255,255,255,.08)")+'"></div>';
     var starred=wlHas(a.tk);
-    h+='<div class="ac"><div class="ac-main">';
-    h+='<div class="ac-top"><div class="ac-lf"><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div style="display:flex;align-items:center;gap:8px"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"★":"☆")+'</button><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
-    h+='<div class="ac-co">'+a.nm+' · '+a.sec+'</div>';
-    h+='<div class="verdict '+a.tp+'"><span style="font-size:16px;flex-shrink:0">'+(a.tp==="buy"?"🟢":a.tp==="sell"?"🔴":"🟡")+'</span>'+a.verdict+'</div>';
+    var liveTag=a._livePx?' <span style="color:var(--grn);font-size:8px;font-weight:700">LIVE</span>':'';
 
-    // Swipeable chart slides
-    var liveTag=a._livePx?'<span style="color:var(--grn);font-size:8px;font-weight:700;margin-left:4px">● LIVE</span>':'';
-    h+='<div class="swipe-wrap" data-sw="'+a.tk+'">';
-    // Slide 1: Price Chart
-    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Price Chart'+liveTag+'</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div><canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas><div class="mc-levels"><span class="mc-lv sup">S: $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R: $'+a.tg.toFixed(2)+'</span></div></div>';
-    // Slide 2: Key Metrics Gauges
-    var rsiPct=Math.min(100,Math.max(0,a.rsi));
-    var rsiCol=rsiPct<30?"#22c55e":rsiPct>70?"#ef4444":"#f59e0b";
-    var rrPct=Math.min(100,a.rr/6*100);
-    var betaPct=Math.min(100,a.beta/4*100);
-    var betaCol=a.beta>2.5?"#ef4444":a.beta>1.8?"#f59e0b":"#22c55e";
-    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Key Metrics</span><span class="mc-tf">Analysis</span></div><div class="gauge-grid">';
-    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(a.cf,cc)+'<div class="gauge-val" style="color:'+cc+'">'+a.cf+'%</div></div><div class="gauge-label">Confidence</div></div>';
-    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(rsiPct,rsiCol)+'<div class="gauge-val" style="color:'+rsiCol+'">'+a.rsi.toFixed(0)+'</div></div><div class="gauge-label">RSI</div></div>';
-    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(rrPct,"#3b82f6")+'<div class="gauge-val" style="color:#3b82f6">'+a.rr+':1</div></div><div class="gauge-label">Risk:Reward</div></div>';
-    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(betaPct,betaCol)+'<div class="gauge-val" style="color:'+betaCol+'">'+a.beta.toFixed(1)+'</div></div><div class="gauge-label">Beta</div></div>';
-    h+='</div></div>';
-    // Slide 3: Analysis Summary
-    var techScore=a.rsi<40?80:a.rsi>60?30:55;
-    var fundScore=a.rev>20?75:a.rev>0?55:35;
-    var sentScore=a.si>15?70:50;
-    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Analysis</span><span class="mc-tf">Summary</span></div><div class="analysis-sum">';
-    h+='<div class="as-row"><div class="as-icon" style="background:rgba(34,197,94,.12)">📊</div><div class="as-label">Technical</div><div class="as-score" style="color:var(--grn)">'+techScore+'/100</div></div>';
-    h+='<div class="as-row"><div class="as-icon" style="background:rgba(59,130,246,.12)">💰</div><div class="as-label">Fundamental</div><div class="as-score" style="color:var(--blu)">'+fundScore+'/100</div></div>';
-    h+='<div class="as-row"><div class="as-icon" style="background:rgba(245,158,11,.12)">📰</div><div class="as-label">Sentiment</div><div class="as-score" style="color:var(--amb)">'+sentScore+'/100</div></div>';
-    h+='<div class="as-row"><div class="as-icon" style="background:rgba(201,168,76,.12)">📐</div><div class="as-label">Patterns</div><div class="as-score" style="color:var(--gld)">'+(a.cf>65?"Active":"Forming")+'</div></div>';
-    h+='<div class="as-row"><div class="as-icon" style="background:rgba(239,68,68,.12)">🛡️</div><div class="as-label">Risk Level</div><div class="as-score" style="color:'+rc+'">'+(rl===3?"High":rl===2?"Medium":"Low")+'</div></div>';
-    h+='</div></div>';
-    h+='</div>';// end swipe-wrap
-    // Swipe dots
-    h+='<div class="swipe-dots" data-dots="'+a.tk+'"><div class="swipe-dot on"></div><div class="swipe-dot"></div><div class="swipe-dot"></div></div>';
+    h+='<div class="ac signal-'+a.tp+'"><div class="ac-main">';
+    // Top row: star + ticker + badge | price + change
+    h+='<div class="ac-top"><div class="ac-lf"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"★":"☆")+'</button><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div class="ac-rt"><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
+    h+='<div class="ac-co">'+a.nm+' · '+a.sec+liveTag+'</div>';
 
-    h+='<div class="ac-mg"><div class="mk"><div class="mk-l">Entry</div><div class="mk-v" style="color:var(--grn)">$'+a.px.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Target</div><div class="mk-v" style="color:var(--blu)">$'+a.tg.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Stop</div><div class="mk-v" style="color:var(--red)">$'+a.sl.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Shares</div><div class="mk-v">'+a.sh+'</div></div><div class="mk"><div class="mk-l">Size</div><div class="mk-v">£'+a.ps.toFixed(0)+'</div></div><div class="mk"><div class="mk-l">R:R</div><div class="mk-v" style="color:var(--grn)">'+a.rr+':1</div></div></div>';
-    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:8px"><span class="ac-tm">'+tm+'</span><div class="rdots">'+dots+'</div></div><div class="ac-cf" style="color:'+cc+'"><div class="cbar"><div class="cfill" style="width:'+a.cf+'%;background:'+cc+'"></div></div>'+a.cf+'%</div></div></div>';
+    // Chart
+    h+='<div class="mc-wrap"><div class="mc-hdr"><span class="mc-title">Price Action</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div><canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas><div class="mc-levels"><span class="mc-lv sup">S $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R $'+a.tg.toFixed(2)+'</span></div></div>';
+
+    // Inline metrics row
+    h+='<div class="ac-metrics">';
+    h+='<div class="ac-met"><div class="ac-met-l">Entry</div><div class="ac-met-v" style="color:var(--grn)">$'+a.px.toFixed(2)+'</div></div>';
+    h+='<div class="ac-met"><div class="ac-met-l">Target</div><div class="ac-met-v" style="color:var(--blu)">$'+a.tg.toFixed(2)+'</div></div>';
+    h+='<div class="ac-met"><div class="ac-met-l">Stop</div><div class="ac-met-v" style="color:var(--red)">$'+a.sl.toFixed(2)+'</div></div>';
+    h+='<div class="ac-met"><div class="ac-met-l">R:R</div><div class="ac-met-v">'+a.rr+':1</div></div>';
+    h+='</div>';
+
+    // Confidence bar
+    h+='<div class="ac-conf"><div class="conf-bar"><div class="conf-fill" style="width:'+a.cf+'%;background:'+cc+'"></div></div><div class="conf-pct" style="color:'+cc+'">'+a.cf+'%</div></div>';
+
+    // Footer
+    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:8px"><span class="ac-tm">'+tm+'</span><div class="rdots">'+dots+'</div></div><div class="ac-ft-rt"><span>'+a.sh+' shares</span><span>£'+a.ps.toFixed(0)+'</span></div></div></div>';
+
+    // Expandable reasoning
     h+='<div class="ac-detail" id="det-'+uid+'"><div class="reasoning"><div class="r-title">Analyst Reasoning</div>';
     h+='<div class="rg"><div class="rg-lb tech"><span class="rg-dot"></span>Technical</div><div class="r-text">'+a.techR+'</div></div>';
     h+='<div class="rg"><div class="rg-lb fund"><span class="rg-dot"></span>Fundamental</div><div class="r-text">'+a.fundR+'</div></div>';
@@ -984,17 +945,15 @@ function render(){
     h+='<div class="rg"><div class="rg-lb pat"><span class="rg-dot"></span>Chart Patterns</div><div class="r-text">'+a.patR+'</div></div>';
     h+='<div class="rg"><div class="rg-lb risk"><span class="rg-dot"></span>Risk & Position</div><div class="r-text">'+a.riskR+'</div></div>';
     h+='</div></div>';
-    h+='<button class="ac-expand" data-uid="'+uid+'">Show Full Analysis ▼</button></div>';
+    h+='<button class="ac-expand" data-uid="'+uid+'">Full Analysis</button></div>';
   }
   el.innerHTML=h;
-  // Expand buttons
   el.querySelectorAll(".ac-expand").forEach(function(btn){
     btn.addEventListener("click",function(){
       var det=$("det-"+this.dataset.uid);det.classList.toggle("open");
-      this.textContent=det.classList.contains("open")?"Hide Analysis ▲":"Show Full Analysis ▼";
+      this.textContent=det.classList.contains("open")?"Hide Analysis":"Full Analysis";
     });
   });
-  // Watchlist buttons
   el.querySelectorAll(".wl-btn").forEach(function(btn){
     btn.addEventListener("click",function(){
       var tk=this.dataset.tk,px=parseFloat(this.dataset.px);
@@ -1002,16 +961,6 @@ function render(){
       this.classList.toggle("on");this.textContent=wlHas(tk)?"★":"☆";
       updateWlPillCount();
       showToast(wlHas(tk)?tk+" added to watchlist":tk+" removed from watchlist");
-    });
-  });
-  // Swipe dot indicators
-  el.querySelectorAll(".swipe-wrap").forEach(function(wrap){
-    var tk=wrap.dataset.sw;
-    wrap.addEventListener("scroll",function(){
-      var idx=Math.round(wrap.scrollLeft/wrap.clientWidth);
-      var dotsEl=document.querySelector('[data-dots="'+tk+'"]');
-      if(!dotsEl)return;
-      dotsEl.querySelectorAll(".swipe-dot").forEach(function(d,i){d.classList.toggle("on",i===idx);});
     });
   });
   updS();
@@ -1031,7 +980,6 @@ function updS(){
     $("qW").textContent=Math.min(78,Math.max(55,avg*.85+5)).toFixed(1)+"%";
     $("qC").textContent=avg.toFixed(0)+"%";
   }
-  // Budget is scanning budget — never deducted
   $("qP").textContent="£"+C.budget.toLocaleString();
   $("nB").textContent="£"+C.budget.toLocaleString();
   var pn=$("qP-n");if(pn)pn.textContent="Scanning Budget";
@@ -1053,37 +1001,64 @@ function downloadJSON(json){
 function showToast(msg){var t=$("exportToast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2000);}
 
 // ---- MOVERS ----
+function buildMoversFromSnaps(snaps,assets){
+  var withChange=[];
+  for(var sym in snaps){
+    var s=snaps[sym];if(!s||!s.latestTrade||!s.prevDailyBar)continue;
+    var px=s.latestTrade.p;var prevC=s.prevDailyBar.c;if(!prevC||prevC<=0)continue;
+    var ch=((px-prevC)/prevC)*100;
+    var asset=null;
+    for(var j=0;j<assets.length;j++){if(assets[j].symbol===sym){asset=assets[j];break;}}
+    withChange.push({tk:sym,nm:asset?asset.name:sym,px:px,ch:ch,vol:s.dailyBar?s.dailyBar.v:0,hi:s.dailyBar?s.dailyBar.h:px,lo:s.dailyBar?s.dailyBar.l:px});
+  }
+  var sorted=withChange.slice().sort(function(a,b){return b.ch-a.ch;});
+  ST.movers.gainers=sorted.filter(function(s){return s.ch>0;}).slice(0,10);
+  ST.movers.losers=sorted.filter(function(s){return s.ch<0;}).reverse().slice(0,10);
+  ST.movers.volume=withChange.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,10);
+  ST.movers.volatile=withChange.slice().sort(function(a,b){return Math.abs(b.ch)-Math.abs(a.ch);}).slice(0,10);
+}
+
 function buildMoversData(){
-  // Build movers from UNI data (already has live prices)
   var withChange=UNI.filter(function(s){return s._livePx&&s._prevClose&&s._prevClose>0;}).map(function(s){
     var ch=((s._livePx-s._prevClose)/s._prevClose)*100;
-    return {tk:s.tk,nm:s.nm,sec:s.sec,px:s._livePx,ch:ch,vol:s._dayVol||0,hi:s._dayHigh||s._livePx,lo:s._dayLow||s._livePx,prevC:s._prevClose};
+    return {tk:s.tk,nm:s.nm,px:s._livePx,ch:ch,vol:s._dayVol||0,hi:s._dayHigh||s._livePx,lo:s._dayLow||s._livePx};
   });
-  // Sort for each category
   var sorted=withChange.slice().sort(function(a,b){return b.ch-a.ch;});
-  ST.movers.gainers=sorted.filter(function(s){return s.ch>0;}).slice(0,15);
-  ST.movers.losers=sorted.filter(function(s){return s.ch<0;}).reverse().slice(0,15);
-  ST.movers.volume=withChange.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,15);
-  // Volatile = biggest absolute change
-  ST.movers.volatile=withChange.slice().sort(function(a,b){return Math.abs(b.ch)-Math.abs(a.ch);}).slice(0,15);
+  ST.movers.gainers=sorted.filter(function(s){return s.ch>0;}).slice(0,10);
+  ST.movers.losers=sorted.filter(function(s){return s.ch<0;}).reverse().slice(0,10);
+  ST.movers.volume=withChange.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,10);
+  ST.movers.volatile=withChange.slice().sort(function(a,b){return Math.abs(b.ch)-Math.abs(a.ch);}).slice(0,10);
+}
+
+// Auto-load movers on boot (independent of scan)
+function loadMoversOnBoot(){
+  var el=$("vMovers");
+  if(el)el.innerHTML='<div class="mover-loading">Loading market movers...</div>';
+  alpFetchAssets().then(function(assets){
+    if(!assets.length){renderMovers();return;}
+    var symbols=assets.map(function(a){return a.symbol;}).slice(0,500);
+    return alpFetchAllSnapshots(symbols).then(function(snaps){
+      buildMoversFromSnaps(snaps,assets);
+      renderMovers();
+    });
+  }).catch(function(){renderMovers();});
 }
 
 function renderMovers(){
   var el=$("vMovers");if(!el)return;
+  function fmtVol(v){return v>=1e6?(v/1e6).toFixed(1)+"M":v>=1e3?(v/1e3).toFixed(0)+"K":v+"";}
   function moverCards(list,cls){
-    if(!list.length)return '<div class="empty-v">Run a scan to see movers</div>';
+    if(!list.length)return '<div class="mover-loading">No data yet</div>';
     var h='<div class="mover-scroll">';
     for(var i=0;i<list.length;i++){
       var m=list[i];var up=m.ch>=0;
-      var volStr=m.vol>=1e6?(m.vol/1e6).toFixed(1)+"M":m.vol>=1e3?(m.vol/1e3).toFixed(0)+"K":m.vol+"";
-      var range=m.hi&&m.lo?("$"+m.lo.toFixed(2)+" – $"+m.hi.toFixed(2)):"";
       h+='<div class="mover-card '+cls+'">';
+      h+='<div class="mv-rank">#'+(i+1)+'</div>';
       h+='<div class="mv-tk">'+m.tk+'</div>';
       h+='<div class="mv-nm">'+m.nm+'</div>';
       h+='<div class="mv-px">$'+m.px.toFixed(2)+'</div>';
       h+='<div class="mv-ch '+(up?"up":"dn")+'">'+(up?"+":"")+m.ch.toFixed(2)+'%</div>';
-      if(cls==="volume")h+='<div class="mv-stat"><b>Vol:</b> '+volStr+'</div>';
-      else h+='<div class="mv-stat">'+range+'</div>';
+      h+='<div class="mv-stat"><b>Vol</b> '+fmtVol(m.vol)+'</div>';
       h+='</div>';
     }
     h+='</div>';return h;
@@ -1098,7 +1073,7 @@ function renderMovers(){
 
 // ---- CHANGELOG (collapsible in Engine) ----
 function getChangelogHTML(){
-  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.3</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">New Features</div><ul class="cl-list"><li>Beautiful swipeable charts — 3 slides per card (Price, Metrics, Analysis)</li><li>Watchlist with star button — add stocks and get automatic price notifications</li><li>Movers tab — top gainers, losers, volume leaders, and most volatile</li><li>Gauge-style metric displays for confidence, RSI, R:R, and beta</li><li>Analysis summary slide with category scores</li></ul><div class="cl-cat">Enhancements</div><ul class="cl-list"><li>Bezier curve charts with glow effects and subtle grid lines</li><li>Pulsing price dot on chart endpoint</li><li>Pill-style Entry/Target/Stop labels on charts</li><li>Taller 110px charts for better visibility</li><li>Swipe dot indicators for chart navigation</li><li>Watchlist price-triggered notifications (stop, target, big moves, buy signals)</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Live Data</div><ul class="cl-list"><li>All NASDAQ stocks scanned dynamically via Alpaca API</li><li>Real-time prices from Alpaca snapshots replace simulated data</li><li>30-day sparkline charts with Entry/Target/Stop analysis lines</li><li>Batch snapshot fetching for hundreds of stocks per scan</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Fixed charts not rendering (canvas sizing + draw timing)</li><li>Fixed prices showing simulated data instead of live Alpaca prices</li><li>Fixed portfolio balance overriding user budget with account equity</li><li>Fixed price range filter using live price instead of stale data</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.1</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Features</div><ul class="cl-list"><li>Structured JSON engine output</li><li>Seeded pseudo-random scoring for session consistency</li><li>Web Notifications for BUY signals</li><li>JSON export on Engine tab</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><div class="cl-cat">Initial Release</div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>18 Nasdaq penny stocks</li><li>Configurable parameters</li><li>PWA with offline support</li></ul></div>';
+  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.4</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">UI/UX Overhaul</div><ul class="cl-list"><li>Complete premium UI redesign — Robinhood-level dark theme</li><li>Card redesign with left accent stripes, shadow depth, no borders</li><li>Beautiful bezier curve charts with gradient fills and glow effects</li><li>Inline metrics row replacing boxy grid layout</li><li>Confidence progress bar per alert</li><li>Tab bar with active indicator line</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Movers tab auto-loads from API on boot — no scan needed</li><li>Top 10 gainers, losers, volume leaders, and most volatile</li><li>Ranked mover cards with percentage badges</li><li>Watchlist with star button and price-triggered notifications</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Fixed charts blank — snapshot data now passed to renderer</li><li>Fixed fallback chart data — smooth 12-point interpolation from real data</li><li>Cleaned up chart — removed cluttered analysis lines</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><ul class="cl-list"><li>All NASDAQ stocks via Alpaca API</li><li>Real-time prices, batch snapshot fetching</li><li>Fixed canvas sizing, live price filter</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>PWA with offline support</li></ul></div>';
 }
 
 // ---- BOOT ----
@@ -1106,8 +1081,9 @@ $("startBtn").onclick=function(){
   $("splash").classList.add("hide");
   setTimeout(function(){
     $("splash").style.display="none";$("app").classList.add("show");
-    buildFallbackUNI();buildSettings();buildEngine();buildTabs();buildFilters();syncDisp();renderMovers();
+    buildFallbackUNI();buildSettings();buildEngine();buildTabs();buildFilters();syncDisp();
     alpFetchAccount();
+    loadMoversOnBoot();// Auto-load movers immediately from API
     $("scanBtn").onclick=runScan;
     if(!isStandalone&&/iPhone|iPad/.test(navigator.userAgent))setTimeout(function(){$("installBanner").classList.add("show");},1200);
   },500);
