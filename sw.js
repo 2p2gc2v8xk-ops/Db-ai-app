@@ -1,5 +1,5 @@
 // DB AI Bot Service Worker — handles caching + version updates
-var CACHE_NAME = 'db-ai-bot-v1.0.2';
+var CACHE_NAME = 'db-ai-bot-v1.0.3';
 var URLS = [
   './',
   './index.html',

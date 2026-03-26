@@ -183,7 +183,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .mc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .mc-title{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
 .mc-tf{font-size:9px;color:var(--blu);font-weight:600}
-.mc-canvas{width:100%;height:80px;display:block;border-radius:6px}
+.mc-canvas{width:100%;height:110px;display:block;border-radius:6px}
 .mc-levels{display:flex;justify-content:space-between;margin-top:4px}
 .mc-lv{font-size:9px;font-family:monospace;font-weight:600}
 .mc-lv.sup{color:var(--grn)}.mc-lv.res{color:var(--red)}
@@ -228,6 +228,62 @@ input,select{font-family:inherit;-webkit-appearance:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .ov-s{font-size:14px;color:var(--blu);font-weight:600;text-align:center}
 .ov-d{font-size:12px;color:var(--tx3);text-align:center}
+
+/* Swipeable Chart Slides */
+.swipe-wrap{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:0;-webkit-overflow-scrolling:touch;scrollbar-width:none;border-radius:10px;margin:10px 0}
+.swipe-wrap::-webkit-scrollbar{display:none}
+.swipe-slide{min-width:100%;scroll-snap-align:start;flex-shrink:0;background:var(--s2);border-radius:10px;padding:10px 10px 6px}
+.swipe-dots{display:flex;justify-content:center;gap:6px;margin:6px 0 2px}
+.swipe-dot{width:6px;height:6px;border-radius:50%;background:var(--s3);transition:all .3s}
+.swipe-dot.on{background:var(--blu);width:18px;border-radius:3px}
+
+/* Slide 2: Metric Gauges */
+.gauge-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:8px 0}
+.gauge{text-align:center}
+.gauge-ring{position:relative;width:64px;height:64px;margin:0 auto 6px}
+.gauge-ring svg{transform:rotate(-90deg)}
+.gauge-ring .gauge-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;font-family:monospace}
+.gauge-label{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px;font-weight:600}
+
+/* Slide 3: Analysis Summary */
+.analysis-sum{padding:6px 0}
+.as-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)}
+.as-row:last-child{border-bottom:none}
+.as-icon{width:24px;height:24px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.as-label{font-size:11px;color:var(--tx2);flex:1}
+.as-score{font-size:12px;font-weight:700;font-family:monospace}
+
+/* Watchlist Button */
+.wl-btn{width:32px;height:32px;border-radius:8px;background:var(--s2);border:1px solid var(--brd);color:var(--tx3);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0}
+.wl-btn.on{background:rgba(245,158,11,.15);border-color:var(--amb);color:var(--amb)}
+.wl-pill{padding:6px 13px;font-size:11px;font-weight:600;border-radius:8px;background:var(--amb2);border:1px solid var(--amb);color:var(--amb);margin-left:4px;display:none}
+.wl-pill.show{display:inline-block}
+
+/* Movers Tab */
+.mover-sec{margin-bottom:20px}
+.mover-sec-hd{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.mover-sec-ic{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.mover-sec-t{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.mover-scroll{overflow-x:auto;scroll-snap-type:x mandatory;display:flex;gap:10px;padding:4px 0 8px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.mover-scroll::-webkit-scrollbar{display:none}
+.mover-card{min-width:160px;max-width:180px;scroll-snap-align:start;flex-shrink:0;background:var(--s1);border:1px solid var(--brd);border-radius:12px;padding:12px;position:relative;overflow:hidden}
+.mover-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px}
+.mover-card.gainer::before{background:linear-gradient(90deg,var(--grn),transparent)}
+.mover-card.loser::before{background:linear-gradient(90deg,var(--red),transparent)}
+.mover-card.volume::before{background:linear-gradient(90deg,var(--blu),transparent)}
+.mover-card.volatile::before{background:linear-gradient(90deg,var(--amb),transparent)}
+.mv-tk{font-size:15px;font-weight:800;margin-bottom:2px}
+.mv-nm{font-size:10px;color:var(--tx3);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mv-px{font-size:14px;font-weight:700;font-family:monospace;margin-bottom:2px}
+.mv-ch{font-size:12px;font-weight:700;font-family:monospace}.mv-ch.up{color:var(--grn)}.mv-ch.dn{color:var(--red)}
+.mv-stat{font-size:10px;color:var(--tx3);margin-top:6px;font-family:monospace}
+.mv-stat b{color:var(--tx2);font-weight:600}
+
+/* Changelog collapsible in Engine */
+.cl-toggle{width:100%;padding:14px;background:var(--s1);border:1px solid var(--brd);border-radius:14px;font-size:13px;font-weight:600;color:var(--tx2);margin-top:16px;display:flex;align-items:center;justify-content:space-between}
+.cl-toggle-arr{transition:transform .3s}
+.cl-toggle.open .cl-toggle-arr{transform:rotate(180deg)}
+.cl-body{display:none;margin-top:8px}.cl-body.open{display:block}
 </style>
 </head>
 <body>
@@ -252,7 +308,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   <div class="sp-logo">DB</div>
   <div class="sp-name">DB <b>AI Bot</b></div>
   <div class="sp-sub">Nasdaq Intelligence</div>
-  <div class="sp-ver-badge">● v1.0.2 · Build 003</div>
+  <div class="sp-ver-badge">● v1.0.3 · Build 004</div>
   <div class="sp-feats">
     <div class="sf"><div class="sf-ic">📊</div><div class="sf-tx"><b>Deep Analyst Reasoning</b><br>Every alert explains the why</div></div>
     <div class="sf"><div class="sf-ic">⚙️</div><div class="sf-tx"><b>Fully Configurable</b><br>Budget, risk, strategy — your rules</div></div>
@@ -261,7 +317,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   </div>
   <button class="sp-btn" id="startBtn">Get Started</button>
   <div class="sp-share"><b id="shareUrl"></b></div>
-  <div class="sp-ver">v1.0.2 · Build 003</div>
+  <div class="sp-ver">v1.0.3 · Build 004</div>
 </div>
 
 <div id="app">
@@ -284,7 +340,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
     </div>
     <div class="vw" id="vSettings"></div>
     <div class="vw" id="vEngine"></div>
-    <div class="vw" id="vChangelog"></div>
+    <div class="vw" id="vMovers"></div>
   </div>
   <div class="tabs" id="tabBar"></div>
 </div>
@@ -294,10 +350,10 @@ input,select{font-family:inherit;-webkit-appearance:none}
 
 <script>
 // ============================================================
-//  DB AI Bot v1.0.2 — Build 003
+//  DB AI Bot v1.0.3 — Build 004
 //  Shareable PWA with auto-updates
 // ============================================================
-var APP_VERSION = "1.0.2";
+var APP_VERSION = "1.0.3";
 var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode:standalone)").matches;
 
 // ---- ALPACA API (hardcoded for all users) ----
@@ -397,16 +453,25 @@ function updateApiStatus(){
   }
 }
 
-// ---- CHART RENDERER ----
+// roundRect polyfill for older browsers
+if(!CanvasRenderingContext2D.prototype.roundRect){
+  CanvasRenderingContext2D.prototype.roundRect=function(x,y,w,h,r){
+    if(!Array.isArray(r))r=[r||0];while(r.length<4)r.push(r[r.length-1]||0);
+    this.moveTo(x+r[0],y);this.lineTo(x+w-r[1],y);this.arcTo(x+w,y,x+w,y+r[1],r[1]);
+    this.lineTo(x+w,y+h-r[2]);this.arcTo(x+w,y+h,x+w-r[2],y+h,r[2]);
+    this.lineTo(x+r[3],y+h);this.arcTo(x,y+h,x,y+h-r[3],r[3]);
+    this.lineTo(x,y+r[0]);this.arcTo(x,y,x+r[0],y,r[0]);
+  };
+}
+// ---- CHART RENDERER (Enhanced) ----
 function drawSparkline(canvas,bars,alert){
   if(!canvas||!bars||bars.length<2)return;
   var ctx=canvas.getContext("2d");
   var dpr=window.devicePixelRatio||1;
-  // Fix: get width from parent since canvas % width doesn't report offsetWidth reliably
   var parent=canvas.parentElement;
   var w=parent?parent.clientWidth-20:canvas.offsetWidth;
-  var h=80;
-  if(w<10)return;// not visible yet
+  var h=110;
+  if(w<10)return;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
@@ -414,59 +479,96 @@ function drawSparkline(canvas,bars,alert){
   var entry=alert?alert.px:null;
   var target=alert?alert.tg:null;
   var stop=alert?alert.sl:null;
-  // Calculate range including analysis levels
   var mn=Math.min.apply(null,closes);var mx=Math.max.apply(null,closes);
   if(stop)mn=Math.min(mn,stop*.995);
   if(target)mx=Math.max(mx,target*1.005);
   if(entry){mn=Math.min(mn,entry);mx=Math.max(mx,entry);}
-  var range=mx-mn||1;var pad=6;var rpad=42;// right padding for labels
+  var range=mx-mn||1;var pad=8;var rpad=48;
   var cw=w-pad-rpad;var ch=h-pad*2;
   function xp(i){return pad+i/(closes.length-1)*cw;}
   function yp(v){return pad+ch-(v-mn)/range*ch;}
-  // Volume bars (subtle)
+
+  // Subtle grid lines
+  ctx.strokeStyle="rgba(255,255,255,.04)";ctx.lineWidth=1;
+  for(var g=0;g<5;g++){var gy=pad+ch*g/4;ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(pad+cw,gy);ctx.stroke();}
+
+  // Volume bars (subtle gradient)
   var vols=bars.map(function(b){return b.v||0;});
   var maxVol=Math.max.apply(null,vols)||1;
-  ctx.globalAlpha=.1;
   for(var i=0;i<vols.length;i++){
-    var bw=Math.max(1,cw/vols.length*.6);
-    var bh=(vols[i]/maxVol)*ch*.35;
-    ctx.fillStyle=closes[i]>=(i>0?closes[i-1]:closes[i])?"#22c55e":"#ef4444";
-    ctx.fillRect(xp(i)-bw/2,h-pad-bh,bw,bh);
+    var bw=Math.max(1.5,cw/vols.length*.6);
+    var bh=(vols[i]/maxVol)*ch*.3;
+    var vu=closes[i]>=(i>0?closes[i-1]:closes[i]);
+    var vg=ctx.createLinearGradient(0,h-pad-bh,0,h-pad);
+    vg.addColorStop(0,vu?"rgba(34,197,94,.12)":"rgba(239,68,68,.12)");
+    vg.addColorStop(1,"rgba(0,0,0,0)");
+    ctx.fillStyle=vg;
+    ctx.beginPath();ctx.roundRect(xp(i)-bw/2,h-pad-bh,bw,bh,[2,2,0,0]);ctx.fill();
   }
-  ctx.globalAlpha=1;
-  // Analysis lines: Stop (red), Entry (blue), Target (green)
+
+  // Analysis lines with pill labels
   function drawLevel(val,color,label){
     if(!val||val<mn||val>mx)return;
     var y=yp(val);
-    ctx.setLineDash([4,3]);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=.5;
+    ctx.setLineDash([3,4]);ctx.strokeStyle=color;ctx.lineWidth=1;ctx.globalAlpha=.4;
     ctx.beginPath();ctx.moveTo(pad,y);ctx.lineTo(pad+cw,y);ctx.stroke();
     ctx.setLineDash([]);ctx.globalAlpha=1;
-    // Label on right
-    ctx.font="bold "+9*dpr/dpr+"px -apple-system,sans-serif";
-    ctx.fillStyle=color;ctx.textAlign="left";ctx.textBaseline="middle";
-    ctx.fillText(label+" $"+val.toFixed(2),pad+cw+4,y);
+    // Pill label
+    var txt=label+" $"+val.toFixed(2);
+    ctx.font="bold 9px -apple-system,sans-serif";
+    var tw=ctx.measureText(txt).width+10;
+    var px=pad+cw+4;var py=y-8;
+    ctx.fillStyle=color;ctx.globalAlpha=.15;
+    ctx.beginPath();ctx.roundRect(px,py,tw,16,[4]);ctx.fill();
+    ctx.globalAlpha=1;ctx.fillStyle=color;ctx.textAlign="left";ctx.textBaseline="middle";
+    ctx.fillText(txt,px+5,y);
   }
   if(stop)drawLevel(stop,"#ef4444","S");
   if(entry)drawLevel(entry,"#3b82f6","E");
   if(target)drawLevel(target,"#22c55e","T");
-  // Price line gradient fill
-  var grad=ctx.createLinearGradient(0,0,0,h);
+
+  // Price line gradient fill (richer)
   var up=closes[closes.length-1]>=closes[0];
-  if(up){grad.addColorStop(0,"rgba(34,197,94,.15)");grad.addColorStop(1,"rgba(34,197,94,0)");}
-  else{grad.addColorStop(0,"rgba(239,68,68,.15)");grad.addColorStop(1,"rgba(239,68,68,0)");}
-  ctx.beginPath();ctx.moveTo(xp(0),yp(closes[0]));
-  for(var i=1;i<closes.length;i++)ctx.lineTo(xp(i),yp(closes[i]));
+  var lineColor=up?"#22c55e":"#ef4444";
+  var grad=ctx.createLinearGradient(0,pad,0,h-pad);
+  if(up){grad.addColorStop(0,"rgba(34,197,94,.22)");grad.addColorStop(.6,"rgba(34,197,94,.06)");grad.addColorStop(1,"rgba(34,197,94,0)");}
+  else{grad.addColorStop(0,"rgba(239,68,68,.22)");grad.addColorStop(.6,"rgba(239,68,68,.06)");grad.addColorStop(1,"rgba(239,68,68,0)");}
+
+  // Bezier curve path
+  function buildCurve(){
+    ctx.moveTo(xp(0),yp(closes[0]));
+    for(var i=0;i<closes.length-1;i++){
+      var x0=xp(i),y0=yp(closes[i]),x1=xp(i+1),y1=yp(closes[i+1]);
+      var cpx=(x0+x1)/2;
+      ctx.bezierCurveTo(cpx,y0,cpx,y1,x1,y1);
+    }
+  }
+  // Fill
+  ctx.beginPath();buildCurve();
   ctx.lineTo(xp(closes.length-1),h-pad);ctx.lineTo(xp(0),h-pad);ctx.closePath();
   ctx.fillStyle=grad;ctx.fill();
-  // Price line
-  ctx.beginPath();ctx.moveTo(xp(0),yp(closes[0]));
-  for(var i=1;i<closes.length;i++)ctx.lineTo(xp(i),yp(closes[i]));
-  ctx.strokeStyle=up?"#22c55e":"#ef4444";ctx.lineWidth=1.5;ctx.lineJoin="round";ctx.stroke();
-  // Current price dot
-  var last=closes.length-1;
-  ctx.beginPath();ctx.arc(xp(last),yp(closes[last]),3,0,Math.PI*2);
-  ctx.fillStyle=up?"#22c55e":"#ef4444";ctx.fill();
-  ctx.strokeStyle=up?"rgba(34,197,94,.3)":"rgba(239,68,68,.3)";ctx.lineWidth=4;ctx.stroke();
+
+  // Glow effect
+  ctx.save();ctx.shadowColor=lineColor;ctx.shadowBlur=8;ctx.shadowOffsetY=0;
+  ctx.beginPath();buildCurve();
+  ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
+  ctx.restore();
+
+  // Crisp price line on top
+  ctx.beginPath();buildCurve();
+  ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
+
+  // Pulsing current price dot
+  var last=closes.length-1;var lx=xp(last),ly=yp(closes[last]);
+  // Outer glow
+  ctx.beginPath();ctx.arc(lx,ly,7,0,Math.PI*2);
+  ctx.fillStyle=up?"rgba(34,197,94,.15)":"rgba(239,68,68,.15)";ctx.fill();
+  // Mid ring
+  ctx.beginPath();ctx.arc(lx,ly,4.5,0,Math.PI*2);
+  ctx.fillStyle=up?"rgba(34,197,94,.3)":"rgba(239,68,68,.3)";ctx.fill();
+  // Core dot
+  ctx.beginPath();ctx.arc(lx,ly,2.5,0,Math.PI*2);
+  ctx.fillStyle=lineColor;ctx.fill();
 }
 
 // Service Worker + Updates
@@ -494,7 +596,29 @@ if (shareUrl && window.location.hostname !== "") {
 // Helpers
 var $ = function(id){return document.getElementById(id);};
 var C = {budget:500,mp:.15,sl:.08,rr:3,pxMin:.5,pxMax:10,hold:90,minCf:65,strat:"balanced"};
-var ST = {alerts:[],filter:"all"};
+var ST = {alerts:[],filter:"all",movers:{gainers:[],losers:[],volume:[],volatile:[]}};
+
+// ---- WATCHLIST ----
+var WL=JSON.parse(localStorage.getItem("db_watchlist")||"{}");// {TICKER:{added:ts,lastPx:n}}
+function wlSave(){localStorage.setItem("db_watchlist",JSON.stringify(WL));}
+function wlToggle(tk,px){if(WL[tk]){delete WL[tk];}else{WL[tk]={added:Date.now(),lastPx:px};}wlSave();}
+function wlHas(tk){return !!WL[tk];}
+function wlCheckAlerts(alerts){
+  if(notifPermission!=="granted")return;
+  alerts.forEach(function(a){
+    if(!WL[a.tk])return;
+    var prev=WL[a.tk].lastPx;if(!prev){WL[a.tk].lastPx=a.px;wlSave();return;}
+    var pctChange=((a.px-prev)/prev)*100;
+    var msg=null;
+    if(a.px<=a.sl)msg=a.tk+" hit STOP at $"+a.px.toFixed(2)+" (was $"+prev.toFixed(2)+")";
+    else if(a.px>=a.tg)msg=a.tk+" hit TARGET at $"+a.px.toFixed(2)+"!";
+    else if(Math.abs(pctChange)>5)msg=a.tk+" moved "+(pctChange>0?"+":"")+pctChange.toFixed(1)+"% to $"+a.px.toFixed(2);
+    else if(a.tp==="buy"&&a.cf>=75)msg=a.tk+" strong BUY signal ("+a.cf+"% confidence) at $"+a.px.toFixed(2);
+    if(msg){try{new Notification("DB AI Watchlist",{body:msg,icon:"icon.svg"});}catch(e){}}
+    WL[a.tk].lastPx=a.px;
+  });
+  wlSave();
+}
 
 // ---- STOCK DATA ----
 // Seed stocks with enriched fundamental data (fallback if API is down)
@@ -653,17 +777,19 @@ function buildSettings(){
 }
 
 function buildEngine(){
-  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 002</p></div>';
+  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><button class="cl-toggle" id="clToggle">📋 Changelog<span class="cl-toggle-arr">▼</span></button><div class="cl-body" id="clBody">'+getChangelogHTML()+'</div><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 003</p></div>';
+  $("clToggle").onclick=function(){this.classList.toggle("open");$("clBody").classList.toggle("open");};
 }
 
 function buildTabs(){
-  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">📈</div><div class="tb-lb">Alerts</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙️</div><div class="tb-lb">Settings</div></button><button class="tb" data-v="Engine"><div class="tb-ic">🧠</div><div class="tb-lb">Engine</div></button><button class="tb" data-v="Changelog"><div class="tb-ic">📋</div><div class="tb-lb">Log</div></button>';
+  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">📈</div><div class="tb-lb">Alerts</div></button><button class="tb" data-v="Movers"><div class="tb-ic">🔥</div><div class="tb-lb">Movers</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙️</div><div class="tb-lb">Settings</div></button><button class="tb" data-v="Engine"><div class="tb-ic">🧠</div><div class="tb-lb">Engine</div></button>';
   $("tabBar").onclick=function(e){var t=e.target.closest(".tb");if(t)switchTab(t.dataset.v);};
 }
 
 function buildFilters(){
-  $("filterPills").innerHTML='<button class="pl on" data-f="all">All</button><button class="pl" data-f="buy">Buy</button><button class="pl" data-f="sell">Sell</button><button class="pl" data-f="watch">Watch</button>';
-  $("filterPills").onclick=function(e){var t=e.target.closest(".pl");if(!t)return;ST.filter=t.dataset.f;this.querySelectorAll(".pl").forEach(function(p){p.classList.remove("on");});t.classList.add("on");render();};
+  var wlCnt=Object.keys(WL).length;
+  $("filterPills").innerHTML='<button class="pl on" data-f="all">All</button><button class="pl" data-f="buy">Buy</button><button class="pl" data-f="sell">Sell</button><button class="pl" data-f="watch">Watch</button><button class="wl-pill'+(wlCnt?" show":"")+'" id="wlPill" data-f="watchlist">★ '+wlCnt+'</button>';
+  $("filterPills").onclick=function(e){var t=e.target.closest(".pl,.wl-pill");if(!t)return;ST.filter=t.dataset.f;this.querySelectorAll(".pl,.wl-pill").forEach(function(p){p.classList.remove("on");});t.classList.add("on");render();};
 }
 
 function switchTab(name){
@@ -743,9 +869,12 @@ function runAnalysisSteps(){
       var out=generateEngineOutput(ST.alerts);
       ST.meta=out.meta;
       notifyEngine(ST.alerts);
+      wlCheckAlerts(ST.alerts);
+      buildMoversData();
       $("ov").classList.remove("on");$("scanBtn").disabled=false;$("scanBtn").textContent="Run AI Market Scan";
       render();
       loadCharts();
+      renderMovers();
       return;
     }
     $("ovS").textContent=steps[i];$("ovD").textContent="Processing "+UNI.length+" stocks...";
@@ -789,10 +918,17 @@ function buildSnapshotBars(a){
 }
 
 // ---- RENDER ----
+function buildGaugeSVG(pct,color){
+  var r=26,c=2*Math.PI*r,d=c*(1-pct/100);
+  return '<svg width="64" height="64" viewBox="0 0 64 64"><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="rgba(255,255,255,.06)" stroke-width="5"/><circle cx="32" cy="32" r="'+r+'" fill="none" stroke="'+color+'" stroke-width="5" stroke-dasharray="'+c+'" stroke-dashoffset="'+d+'" stroke-linecap="round"/></svg>';
+}
 function render(){
   var el=$("alertsList");
-  var f=ST.filter==="all"?ST.alerts:ST.alerts.filter(function(a){return a.tp===ST.filter;});
-  if(!f.length){el.innerHTML='<div class="empty-v">'+(ST.alerts.length?"No "+ST.filter+" alerts.":"Tap <b>Run AI Market Scan</b> to begin")+"</div>";updS();return;}
+  var wlFilter=ST.filter==="watchlist";
+  var f;
+  if(wlFilter){f=ST.alerts.filter(function(a){return wlHas(a.tk);});}
+  else{f=ST.filter==="all"?ST.alerts:ST.alerts.filter(function(a){return a.tp===ST.filter;});}
+  if(!f.length){el.innerHTML='<div class="empty-v">'+(wlFilter?"No watchlisted stocks in scan results.":(ST.alerts.length?"No "+ST.filter+" alerts.":"Tap <b>Run AI Market Scan</b> to begin"))+"</div>";updS();return;}
   var h="";
   for(var i=0;i<f.length;i++){
     var a=f[i],uid="a"+i+a.tk;
@@ -801,12 +937,44 @@ function render(){
     var rc=rl===3?"#ef4444":rl===2?"#f59e0b":"#22c55e";
     var tm=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
     var dots="";for(var d=1;d<=3;d++)dots+='<div class="rdd" style="background:'+(d<=rl?rc:"var(--s3)")+'"></div>';
+    var starred=wlHas(a.tk);
     h+='<div class="ac"><div class="ac-main">';
-    h+='<div class="ac-top"><div class="ac-lf"><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div>';
+    h+='<div class="ac-top"><div class="ac-lf"><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div style="display:flex;align-items:center;gap:8px"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"★":"☆")+'</button><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
     h+='<div class="ac-co">'+a.nm+' · '+a.sec+'</div>';
     h+='<div class="verdict '+a.tp+'"><span style="font-size:16px;flex-shrink:0">'+(a.tp==="buy"?"🟢":a.tp==="sell"?"🔴":"🟡")+'</span>'+a.verdict+'</div>';
+
+    // Swipeable chart slides
     var liveTag=a._livePx?'<span style="color:var(--grn);font-size:8px;font-weight:700;margin-left:4px">● LIVE</span>':'';
-    h+='<div class="mc-wrap"><div class="mc-hdr"><span class="mc-title">30D Price Chart'+liveTag+'</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div><canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas><div class="mc-levels"><span class="mc-lv sup">S: $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R: $'+a.tg.toFixed(2)+'</span></div></div>';
+    h+='<div class="swipe-wrap" data-sw="'+a.tk+'">';
+    // Slide 1: Price Chart
+    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Price Chart'+liveTag+'</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div><canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas><div class="mc-levels"><span class="mc-lv sup">S: $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R: $'+a.tg.toFixed(2)+'</span></div></div>';
+    // Slide 2: Key Metrics Gauges
+    var rsiPct=Math.min(100,Math.max(0,a.rsi));
+    var rsiCol=rsiPct<30?"#22c55e":rsiPct>70?"#ef4444":"#f59e0b";
+    var rrPct=Math.min(100,a.rr/6*100);
+    var betaPct=Math.min(100,a.beta/4*100);
+    var betaCol=a.beta>2.5?"#ef4444":a.beta>1.8?"#f59e0b":"#22c55e";
+    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Key Metrics</span><span class="mc-tf">Analysis</span></div><div class="gauge-grid">';
+    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(a.cf,cc)+'<div class="gauge-val" style="color:'+cc+'">'+a.cf+'%</div></div><div class="gauge-label">Confidence</div></div>';
+    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(rsiPct,rsiCol)+'<div class="gauge-val" style="color:'+rsiCol+'">'+a.rsi.toFixed(0)+'</div></div><div class="gauge-label">RSI</div></div>';
+    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(rrPct,"#3b82f6")+'<div class="gauge-val" style="color:#3b82f6">'+a.rr+':1</div></div><div class="gauge-label">Risk:Reward</div></div>';
+    h+='<div class="gauge"><div class="gauge-ring">'+buildGaugeSVG(betaPct,betaCol)+'<div class="gauge-val" style="color:'+betaCol+'">'+a.beta.toFixed(1)+'</div></div><div class="gauge-label">Beta</div></div>';
+    h+='</div></div>';
+    // Slide 3: Analysis Summary
+    var techScore=a.rsi<40?80:a.rsi>60?30:55;
+    var fundScore=a.rev>20?75:a.rev>0?55:35;
+    var sentScore=a.si>15?70:50;
+    h+='<div class="swipe-slide"><div class="mc-hdr"><span class="mc-title">Analysis</span><span class="mc-tf">Summary</span></div><div class="analysis-sum">';
+    h+='<div class="as-row"><div class="as-icon" style="background:rgba(34,197,94,.12)">📊</div><div class="as-label">Technical</div><div class="as-score" style="color:var(--grn)">'+techScore+'/100</div></div>';
+    h+='<div class="as-row"><div class="as-icon" style="background:rgba(59,130,246,.12)">💰</div><div class="as-label">Fundamental</div><div class="as-score" style="color:var(--blu)">'+fundScore+'/100</div></div>';
+    h+='<div class="as-row"><div class="as-icon" style="background:rgba(245,158,11,.12)">📰</div><div class="as-label">Sentiment</div><div class="as-score" style="color:var(--amb)">'+sentScore+'/100</div></div>';
+    h+='<div class="as-row"><div class="as-icon" style="background:rgba(201,168,76,.12)">📐</div><div class="as-label">Patterns</div><div class="as-score" style="color:var(--gld)">'+(a.cf>65?"Active":"Forming")+'</div></div>';
+    h+='<div class="as-row"><div class="as-icon" style="background:rgba(239,68,68,.12)">🛡️</div><div class="as-label">Risk Level</div><div class="as-score" style="color:'+rc+'">'+(rl===3?"High":rl===2?"Medium":"Low")+'</div></div>';
+    h+='</div></div>';
+    h+='</div>';// end swipe-wrap
+    // Swipe dots
+    h+='<div class="swipe-dots" data-dots="'+a.tk+'"><div class="swipe-dot on"></div><div class="swipe-dot"></div><div class="swipe-dot"></div></div>';
+
     h+='<div class="ac-mg"><div class="mk"><div class="mk-l">Entry</div><div class="mk-v" style="color:var(--grn)">$'+a.px.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Target</div><div class="mk-v" style="color:var(--blu)">$'+a.tg.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Stop</div><div class="mk-v" style="color:var(--red)">$'+a.sl.toFixed(2)+'</div></div><div class="mk"><div class="mk-l">Shares</div><div class="mk-v">'+a.sh+'</div></div><div class="mk"><div class="mk-l">Size</div><div class="mk-v">£'+a.ps.toFixed(0)+'</div></div><div class="mk"><div class="mk-l">R:R</div><div class="mk-v" style="color:var(--grn)">'+a.rr+':1</div></div></div>';
     h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:8px"><span class="ac-tm">'+tm+'</span><div class="rdots">'+dots+'</div></div><div class="ac-cf" style="color:'+cc+'"><div class="cbar"><div class="cfill" style="width:'+a.cf+'%;background:'+cc+'"></div></div>'+a.cf+'%</div></div></div>';
     h+='<div class="ac-detail" id="det-'+uid+'"><div class="reasoning"><div class="r-title">Analyst Reasoning</div>';
@@ -819,13 +987,40 @@ function render(){
     h+='<button class="ac-expand" data-uid="'+uid+'">Show Full Analysis ▼</button></div>';
   }
   el.innerHTML=h;
+  // Expand buttons
   el.querySelectorAll(".ac-expand").forEach(function(btn){
     btn.addEventListener("click",function(){
       var det=$("det-"+this.dataset.uid);det.classList.toggle("open");
       this.textContent=det.classList.contains("open")?"Hide Analysis ▲":"Show Full Analysis ▼";
     });
   });
+  // Watchlist buttons
+  el.querySelectorAll(".wl-btn").forEach(function(btn){
+    btn.addEventListener("click",function(){
+      var tk=this.dataset.tk,px=parseFloat(this.dataset.px);
+      wlToggle(tk,px);
+      this.classList.toggle("on");this.textContent=wlHas(tk)?"★":"☆";
+      updateWlPillCount();
+      showToast(wlHas(tk)?tk+" added to watchlist":tk+" removed from watchlist");
+    });
+  });
+  // Swipe dot indicators
+  el.querySelectorAll(".swipe-wrap").forEach(function(wrap){
+    var tk=wrap.dataset.sw;
+    wrap.addEventListener("scroll",function(){
+      var idx=Math.round(wrap.scrollLeft/wrap.clientWidth);
+      var dotsEl=document.querySelector('[data-dots="'+tk+'"]');
+      if(!dotsEl)return;
+      dotsEl.querySelectorAll(".swipe-dot").forEach(function(d,i){d.classList.toggle("on",i===idx);});
+    });
+  });
   updS();
+}
+function updateWlPillCount(){
+  var pill=$("wlPill");if(!pill)return;
+  var cnt=Object.keys(WL).length;
+  pill.textContent="★ "+cnt;
+  pill.classList.toggle("show",cnt>0);
 }
 
 function updS(){
@@ -857,9 +1052,53 @@ function downloadJSON(json){
 }
 function showToast(msg){var t=$("exportToast");t.textContent=msg;t.classList.add("show");setTimeout(function(){t.classList.remove("show");},2000);}
 
-// ---- CHANGELOG ----
-function buildChangelog(){
-  $("vChangelog").innerHTML='<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Live Data</div><ul class="cl-list"><li>All NASDAQ stocks scanned dynamically via Alpaca API</li><li>Real-time prices from Alpaca snapshots replace simulated data</li><li>30-day sparkline charts with Entry/Target/Stop analysis lines</li><li>LIVE indicator on charts when using real market data</li><li>Batch snapshot fetching for hundreds of stocks per scan</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Fixed charts not rendering (canvas sizing + draw timing)</li><li>Fixed prices showing simulated data instead of live Alpaca prices</li><li>Fixed portfolio balance overriding user budget with account equity</li><li>Removed API keys and account details from UI (hardcoded for all users)</li><li>Fixed price range filter using live price instead of stale data</li></ul><div class="cl-cat">UI/UX</div><ul class="cl-list"><li>iPhone 16 Pro Max Dynamic Island safe area support</li><li>Improved bottom tab bar spacing for notched devices</li><li>Up to 12 alerts per scan (was 8)</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.1</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Engine</div><ul class="cl-list"><li>Structured JSON engine output matching full API spec</li><li>Seeded pseudo-random scoring for session consistency</li><li>Chart data (support/resistance) added to every alert</li><li>Timeframe classification (Day Trade / Swing / Position)</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Portfolio tracking — used/remaining budget after scan</li><li>Web Notifications for new BUY signals</li><li>JSON export button on Engine tab (copy or download)</li><li>Changelog tab added</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><div class="cl-cat">Initial Release</div><ul class="cl-list"><li>5-layer AI reasoning engine (Technical, Fundamental, Sentiment, Patterns, Risk)</li><li>18 Nasdaq penny stocks in universe</li><li>Configurable budget, risk, and screening parameters</li><li>Alert cards with expandable analyst reasoning</li><li>PWA with offline support and iOS install prompt</li><li>Dark theme mobile-first UI</li></ul></div>';
+// ---- MOVERS ----
+function buildMoversData(){
+  // Build movers from UNI data (already has live prices)
+  var withChange=UNI.filter(function(s){return s._livePx&&s._prevClose&&s._prevClose>0;}).map(function(s){
+    var ch=((s._livePx-s._prevClose)/s._prevClose)*100;
+    return {tk:s.tk,nm:s.nm,sec:s.sec,px:s._livePx,ch:ch,vol:s._dayVol||0,hi:s._dayHigh||s._livePx,lo:s._dayLow||s._livePx,prevC:s._prevClose};
+  });
+  // Sort for each category
+  var sorted=withChange.slice().sort(function(a,b){return b.ch-a.ch;});
+  ST.movers.gainers=sorted.filter(function(s){return s.ch>0;}).slice(0,15);
+  ST.movers.losers=sorted.filter(function(s){return s.ch<0;}).reverse().slice(0,15);
+  ST.movers.volume=withChange.slice().sort(function(a,b){return b.vol-a.vol;}).slice(0,15);
+  // Volatile = biggest absolute change
+  ST.movers.volatile=withChange.slice().sort(function(a,b){return Math.abs(b.ch)-Math.abs(a.ch);}).slice(0,15);
+}
+
+function renderMovers(){
+  var el=$("vMovers");if(!el)return;
+  function moverCards(list,cls){
+    if(!list.length)return '<div class="empty-v">Run a scan to see movers</div>';
+    var h='<div class="mover-scroll">';
+    for(var i=0;i<list.length;i++){
+      var m=list[i];var up=m.ch>=0;
+      var volStr=m.vol>=1e6?(m.vol/1e6).toFixed(1)+"M":m.vol>=1e3?(m.vol/1e3).toFixed(0)+"K":m.vol+"";
+      var range=m.hi&&m.lo?("$"+m.lo.toFixed(2)+" – $"+m.hi.toFixed(2)):"";
+      h+='<div class="mover-card '+cls+'">';
+      h+='<div class="mv-tk">'+m.tk+'</div>';
+      h+='<div class="mv-nm">'+m.nm+'</div>';
+      h+='<div class="mv-px">$'+m.px.toFixed(2)+'</div>';
+      h+='<div class="mv-ch '+(up?"up":"dn")+'">'+(up?"+":"")+m.ch.toFixed(2)+'%</div>';
+      if(cls==="volume")h+='<div class="mv-stat"><b>Vol:</b> '+volStr+'</div>';
+      else h+='<div class="mv-stat">'+range+'</div>';
+      h+='</div>';
+    }
+    h+='</div>';return h;
+  }
+  var html='';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--grn2)">🚀</div><div class="mover-sec-t" style="color:var(--grn)">Top Gainers</div></div>'+moverCards(ST.movers.gainers,"gainer")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--red2)">📉</div><div class="mover-sec-t" style="color:var(--red)">Top Losers</div></div>'+moverCards(ST.movers.losers,"loser")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--blu2)">📊</div><div class="mover-sec-t" style="color:var(--blu)">Highest Volume</div></div>'+moverCards(ST.movers.volume,"volume")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--amb2)">⚡</div><div class="mover-sec-t" style="color:var(--amb)">Most Volatile</div></div>'+moverCards(ST.movers.volatile,"volatile")+'</div>';
+  el.innerHTML=html;
+}
+
+// ---- CHANGELOG (collapsible in Engine) ----
+function getChangelogHTML(){
+  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.3</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">New Features</div><ul class="cl-list"><li>Beautiful swipeable charts — 3 slides per card (Price, Metrics, Analysis)</li><li>Watchlist with star button — add stocks and get automatic price notifications</li><li>Movers tab — top gainers, losers, volume leaders, and most volatile</li><li>Gauge-style metric displays for confidence, RSI, R:R, and beta</li><li>Analysis summary slide with category scores</li></ul><div class="cl-cat">Enhancements</div><ul class="cl-list"><li>Bezier curve charts with glow effects and subtle grid lines</li><li>Pulsing price dot on chart endpoint</li><li>Pill-style Entry/Target/Stop labels on charts</li><li>Taller 110px charts for better visibility</li><li>Swipe dot indicators for chart navigation</li><li>Watchlist price-triggered notifications (stop, target, big moves, buy signals)</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Live Data</div><ul class="cl-list"><li>All NASDAQ stocks scanned dynamically via Alpaca API</li><li>Real-time prices from Alpaca snapshots replace simulated data</li><li>30-day sparkline charts with Entry/Target/Stop analysis lines</li><li>Batch snapshot fetching for hundreds of stocks per scan</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Fixed charts not rendering (canvas sizing + draw timing)</li><li>Fixed prices showing simulated data instead of live Alpaca prices</li><li>Fixed portfolio balance overriding user budget with account equity</li><li>Fixed price range filter using live price instead of stale data</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.1</span></div><div class="cl-date">2026-03-25</div></div><div class="cl-cat">Features</div><ul class="cl-list"><li>Structured JSON engine output</li><li>Seeded pseudo-random scoring for session consistency</li><li>Web Notifications for BUY signals</li><li>JSON export on Engine tab</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><div class="cl-cat">Initial Release</div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>18 Nasdaq penny stocks</li><li>Configurable parameters</li><li>PWA with offline support</li></ul></div>';
 }
 
 // ---- BOOT ----
@@ -867,7 +1106,7 @@ $("startBtn").onclick=function(){
   $("splash").classList.add("hide");
   setTimeout(function(){
     $("splash").style.display="none";$("app").classList.add("show");
-    buildFallbackUNI();buildSettings();buildEngine();buildChangelog();buildTabs();buildFilters();syncDisp();
+    buildFallbackUNI();buildSettings();buildEngine();buildTabs();buildFilters();syncDisp();renderMovers();
     alpFetchAccount();
     $("scanBtn").onclick=runScan;
     if(!isStandalone&&/iPhone|iPad/.test(navigator.userAgent))setTimeout(function(){$("installBanner").classList.add("show");},1200);
