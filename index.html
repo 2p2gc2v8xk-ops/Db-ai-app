@@ -466,9 +466,13 @@ function drawSparkline(canvas,bars){
   var ctx=canvas.getContext("2d");
   var dpr=window.devicePixelRatio||1;
   var parent=canvas.parentElement;
-  var w=parent?parent.clientWidth-24:canvas.offsetWidth;
+  // Try multiple ways to get width — this is the #1 cause of blank charts
+  var w=0;
+  if(parent)w=parent.clientWidth-24;
+  if(w<10)w=canvas.offsetWidth;
+  if(w<10)w=parent?parent.getBoundingClientRect().width-24:0;
+  if(w<10)w=window.innerWidth-80;// absolute fallback: screen width minus padding
   var h=110;
-  if(w<10)return;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
@@ -857,22 +861,27 @@ function runAnalysisSteps(){
 }
 
 function loadCharts(){
-  ST.alerts.forEach(function(a){
-    alpFetchBars(a.tk,"1Day",30).then(function(bars){
-      if(!bars||!bars.length){
-        // Fallback: build chart from real snapshot data we already have
-        bars=buildSnapshotBars(a);
+  // Step 1: Draw immediately from snapshot data (guaranteed to work)
+  setTimeout(function(){
+    ST.alerts.forEach(function(a){
+      var cv=document.getElementById("chart-"+a.tk);
+      if(!cv)return;
+      var bars=buildSnapshotBars(a);
+      if(bars&&bars.length>=2){
+        a._bars=bars;
+        drawSparkline(cv,bars);
       }
-      if(!bars||!bars.length)return;
-      a._bars=bars;
-      requestAnimationFrame(function(){
-        requestAnimationFrame(function(){
-          var cv=document.getElementById("chart-"+a.tk);
-          if(cv)drawSparkline(cv,bars);
-        });
+    });
+    // Step 2: Try to upgrade with real bar data in background
+    ST.alerts.forEach(function(a){
+      alpFetchBars(a.tk,"1Day",30).then(function(bars){
+        if(!bars||!bars.length)return;
+        a._bars=bars;
+        var cv=document.getElementById("chart-"+a.tk);
+        if(cv)drawSparkline(cv,bars);
       });
     });
-  });
+  },100);// Wait for DOM layout
 }
 
 // Build minimal bar array from real Alpaca snapshot data
