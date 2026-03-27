@@ -365,7 +365,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 </head>
 <body>
 
-<div id="updateBanner" onclick="location.reload()">🔄 New version available — tap to update</div>
+<div id="updateBanner" onclick="location.reload()">New version available — tap to update</div>
 
 <div id="installBanner">
   <div class="ib-handle"></div>
@@ -429,7 +429,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 <script>
 // ============================================================
-//  DB AI Bot v1.0.4 — Build 005
+//  DB AI Bot v1.0.5 — Build 006
 //  Shareable PWA with auto-updates
 // ============================================================
 var APP_VERSION = "1.0.5";
@@ -526,9 +526,12 @@ function alpFetchAllSnapshots(symbols){
 function updateApiStatus(){
   var el=$("apiStatus");if(!el)return;
   if(ALP.connected){
-    el.innerHTML='<div class="api-dot ok"></div><div class="api-txt">Live Data: <b>Connected</b></div>';
+    el.innerHTML='<div class="api-dot ok"></div><div class="api-txt"><b>Connected</b> to Alpaca</div>';
+    if(ALP.account&&ALP.account.portfolio_value){
+      el.innerHTML+='<div class="api-bal">$'+parseFloat(ALP.account.portfolio_value).toLocaleString()+'</div>';
+    }
   }else{
-    el.innerHTML='<div class="api-dot err"></div><div class="api-txt">Live Data: <b>Reconnecting...</b></div>';
+    el.innerHTML='<div class="api-dot off"></div><div class="api-txt">Alpaca: <b>Not connected</b></div>';
   }
 }
 
@@ -888,6 +891,27 @@ function wlCheckAlerts(alerts){
   wlSave();
 }
 
+// Auto-reload watchlist prices on app boot
+function loadWatchlistOnBoot(){
+  var tickers=Object.keys(WL);
+  if(!tickers.length)return;
+  // Fetch latest snapshots for all watchlisted tickers
+  alpFetchMultiSnapshots(tickers).then(function(snaps){
+    for(var tk in snaps){
+      if(!WL[tk])continue;
+      var s=snaps[tk];
+      if(s&&s.latestTrade){
+        var newPx=s.latestTrade.p;
+        var oldPx=WL[tk].lastPx;
+        WL[tk].lastPx=newPx;
+        WL[tk].prevPx=oldPx;
+        WL[tk].change=oldPx?((newPx-oldPx)/oldPx*100):0;
+      }
+    }
+    wlSave();
+  });
+}
+
 // ---- STOCK DATA ----
 // Seed stocks with enriched fundamental data (fallback if API is down)
 var SEED_UNI={
@@ -1046,12 +1070,55 @@ function buildSettings(){
 }
 
 function buildEngine(){
-  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><button class="cl-toggle" id="clToggle">📋 Changelog<span class="cl-toggle-arr">▼</span></button><div class="cl-body" id="clBody">'+getChangelogHTML()+'</div><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 006</p></div>';
+  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">Export Engine JSON</button><button class="cl-toggle" id="clToggle">Changelog<span class="cl-toggle-arr">▼</span></button><div class="cl-body" id="clBody">'+getChangelogHTML()+'</div><div class="about"><p>Educational and research purposes only. Not financial advice. Always verify via your broker or TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 006</p></div>';
   $("clToggle").onclick=function(){this.classList.toggle("open");$("clBody").classList.toggle("open");};
 }
 
+function buildHelp(){
+  var h='<div class="help-intro"><h2>Trading Glossary</h2><p>New to trading? This guide explains every term and indicator used in DB AI Bot. Tap any term to learn more.</p></div>';
+  var terms=[
+    {name:"RSI",full:"Relative Strength Index",desc:"Measures momentum on a scale of 0-100. Below 30 means a stock is oversold (potentially cheap). Above 70 means overbought (potentially expensive).",example:"RSI at 25 = deeply oversold, historically bounces 12-18% within 2-4 weeks",tip:"Look for RSI below 30 combined with a volume spike — that's often a reversal signal."},
+    {name:"MACD",full:"Moving Average Convergence Divergence",desc:"Shows the relationship between two moving averages (12-day and 26-day EMA). When the MACD line crosses above the signal line, it's a bullish signal. When it crosses below, it's bearish.",example:"MACD bullish crossover = the 12 EMA just crossed above the 26 EMA",tip:"MACD is most reliable when confirmed by volume — a crossover with high volume is stronger."},
+    {name:"EMA",full:"Exponential Moving Average",desc:"A type of moving average that gives more weight to recent prices. Common periods are 9, 20, and 50 days. When a shorter EMA crosses above a longer one, it's bullish (called a 'golden cross').",example:"20 EMA crossing above 50 EMA = golden cross = bullish trend change",tip:"The 20 EMA acts as dynamic support in uptrends — price often bounces off it."},
+    {name:"Bollinger Bands",full:"Bollinger Bands (BB)",desc:"Three lines: a 20-day moving average in the middle, with upper and lower bands 2 standard deviations away. When bands narrow (squeeze), a big move is coming. When price touches the lower band, it may be oversold.",example:"Price at lower band + bands narrowing = potential breakout setup",tip:"A 'Bollinger squeeze' (very narrow bands) often precedes explosive moves in either direction."},
+    {name:"ATR",full:"Average True Range",desc:"Measures volatility — how much a stock typically moves per day. Higher ATR = more volatile. Used to set intelligent stop-losses based on actual price movement rather than arbitrary percentages.",example:"ATR of $0.50 on a $5 stock = moves about 10% per day",tip:"Set your stop-loss at 1.5-2x ATR below your entry to avoid being stopped out by normal volatility."},
+    {name:"R:R",full:"Reward-to-Risk Ratio",desc:"How much you stand to gain vs how much you could lose. A 3:1 R:R means your target profit is 3x your potential loss. Higher R:R = better trade. Never take trades below 2:1.",example:"Entry $5, Stop $4.50, Target $6.50 = $1.50 reward / $0.50 risk = 3:1 R:R",tip:"Even with only 40% win rate, a consistent 3:1 R:R makes you profitable over time."},
+    {name:"Stop Loss",full:"Stop-Loss Order",desc:"An automatic sell order that limits your loss. If you buy at $5 with an 8% stop, the stock auto-sells at $4.60. Essential for protecting capital — never trade without one.",example:"Buy at $5.00, Stop at $4.60 = maximum loss of $0.40 per share (8%)",tip:"Never move your stop loss further from your entry — only tighten it as the trade goes in your favour."},
+    {name:"Take Profit",full:"Take-Profit / Target",desc:"The price level where you plan to sell for a profit. Set based on technical levels (resistance, chart patterns) and your R:R ratio.",example:"Entry $5.00, Target $6.50 = potential gain of 30%",tip:"Consider taking partial profits (50%) at the target and letting the rest ride with a trailing stop."},
+    {name:"Float",full:"Float / Shares Float",desc:"The number of shares available for public trading. Low float stocks (under 50M shares) move faster because supply is limited — buying pressure has a bigger price impact.",example:"10M float = very low, high price impact. 500M float = high, moves slowly",tip:"Low float + high short interest = potential short squeeze candidate."},
+    {name:"Short Interest",full:"Short Interest (SI%)",desc:"Percentage of float that's been sold short (people betting the price will drop). Above 20% is very high. If the stock starts rising, short sellers may be forced to buy back (short squeeze), driving the price up rapidly.",example:"SI at 25% with rising price = short squeeze potential",tip:"High SI alone isn't bullish — you need a catalyst (good news, earnings beat) to trigger the squeeze."},
+    {name:"Beta",full:"Beta Coefficient",desc:"Measures how volatile a stock is compared to the overall market. Beta of 1.0 = moves with the market. Beta 2.0 = moves 2x as much. Higher beta = higher risk and higher reward potential.",example:"Beta 2.5 = if the market drops 1%, this stock drops ~2.5%",tip:"Higher beta stocks need wider stop-losses. Adjust position size down for high-beta plays."},
+    {name:"Market Cap",full:"Market Capitalisation",desc:"Total value of all shares: share price x total shares. Penny stocks are typically micro-cap (under $300M) or small-cap ($300M-$2B). Smaller = more volatile but higher growth potential.",example:"$5 price x 100M shares = $500M market cap (small-cap)",tip:"Micro-cap stocks can double quickly but also have higher risk of dilution or delisting."},
+    {name:"Confidence",full:"AI Confidence Score",desc:"DB AI Bot's overall conviction in a trade signal, from 20% to 95%. Combines all 5 analysis layers (Technical, Fundamental, Sentiment, Pattern, Risk) weighted by your strategy. Higher = stronger signal.",example:"85% confidence = strong agreement across all 5 analysis factors",tip:"Consider only trading signals above 70% confidence. Filter using the Min Confidence setting."},
+    {name:"Position Size",full:"Position Sizing",desc:"How many shares to buy, calculated as: (Budget x Max Position %) / Share Price. Never risk more than 15% of your portfolio on a single trade.",example:"£500 budget x 15% max position = £75 max per trade",tip:"Reduce position size for high-beta stocks. Risk the same £ amount per trade, not the same number of shares."}
+  ];
+  // Indicators section
+  h+='<div class="help-section"><div class="help-section-title">Technical Indicators</div>';
+  for(var i=0;i<6;i++){var t=terms[i];
+    h+='<div class="help-card" data-idx="'+i+'"><div class="help-term"><div><div class="help-term-name">'+t.full+'</div></div><div style="display:flex;align-items:center"><span class="help-term-abbr">'+t.name+'</span><span class="help-term-arrow">&#9662;</span></div></div><div class="help-detail"><p>'+t.desc+'</p><div class="help-example">'+t.example+'</div><div class="help-tip"><span class="help-tip-icon">&#9432;</span><span class="help-tip-text">'+t.tip+'</span></div></div></div>';
+  }
+  h+='</div>';
+  // Risk & Sizing section
+  h+='<div class="help-section"><div class="help-section-title">Risk & Position Sizing</div>';
+  for(var i=6;i<8;i++){var t=terms[i];
+    h+='<div class="help-card" data-idx="'+i+'"><div class="help-term"><div><div class="help-term-name">'+t.full+'</div></div><div style="display:flex;align-items:center"><span class="help-term-abbr">'+t.name+'</span><span class="help-term-arrow">&#9662;</span></div></div><div class="help-detail"><p>'+t.desc+'</p><div class="help-example">'+t.example+'</div><div class="help-tip"><span class="help-tip-icon">&#9432;</span><span class="help-tip-text">'+t.tip+'</span></div></div></div>';
+  }
+  h+='</div>';
+  // Market Terms section
+  h+='<div class="help-section"><div class="help-section-title">Market Terms</div>';
+  for(var i=8;i<terms.length;i++){var t=terms[i];
+    h+='<div class="help-card" data-idx="'+i+'"><div class="help-term"><div><div class="help-term-name">'+t.full+'</div></div><div style="display:flex;align-items:center"><span class="help-term-abbr">'+t.name+'</span><span class="help-term-arrow">&#9662;</span></div></div><div class="help-detail"><p>'+t.desc+'</p><div class="help-example">'+t.example+'</div><div class="help-tip"><span class="help-tip-icon">&#9432;</span><span class="help-tip-text">'+t.tip+'</span></div></div></div>';
+  }
+  h+='</div>';
+  $("vHelp").innerHTML=h;
+  // Toggle expand/collapse
+  $("vHelp").querySelectorAll(".help-card").forEach(function(card){
+    card.querySelector(".help-term").addEventListener("click",function(){card.classList.toggle("open");});
+  });
+}
+
 function buildTabs(){
-  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic">◎</div><div class="tb-lb">Scan</div></button><button class="tb" data-v="Movers"><div class="tb-ic">↗</div><div class="tb-lb">Movers</div></button><button class="tb" data-v="Settings"><div class="tb-ic">⚙</div><div class="tb-lb">Config</div></button><button class="tb" data-v="Engine"><div class="tb-ic">⬡</div><div class="tb-lb">Engine</div></button>';
+  $("tabBar").innerHTML='<button class="tb on" data-v="Alerts"><div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div><div class="tb-lb">Scan</div></button><button class="tb" data-v="Movers"><div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg></div><div class="tb-lb">Movers</div></button><button class="tb" data-v="Settings"><div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9"/></svg></div><div class="tb-lb">Config</div></button><button class="tb" data-v="Engine"><div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="2"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="10" y1="4" x2="10" y2="20"/></svg></div><div class="tb-lb">Engine</div></button><button class="tb" data-v="Help"><div class="tb-ic"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg></div><div class="tb-lb">Help</div></button>';
   $("tabBar").onclick=function(e){var t=e.target.closest(".tb");if(t)switchTab(t.dataset.v);};
 }
 
@@ -1085,8 +1152,8 @@ function dismissInstall(){$("installBanner").classList.remove("show");}
 function runScan(){
   _seed=Date.now();
   readCfg();syncDisp();requestNotifPermission();
-  $("ov").classList.add("on");$("scanBtn").disabled=true;$("scanBtn").textContent="Scanning...";
-  $("ovS").textContent="Fetching NASDAQ assets...";$("ovD").textContent="Connecting to Alpaca...";
+  $("ov").classList.add("on");$("scanBtn").disabled=true;$("scanBtn").classList.add("scanning");$("scanBtn").innerHTML='<svg class="scan-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>Analysing...';
+  $("ovS").textContent="Fetching NASDAQ assets...";$("ovD").textContent="Connecting to Alpaca...";if($("ovProg"))$("ovProg").style.width="5%";
 
   // Step 1: Fetch all NASDAQ assets + account
   Promise.all([alpFetchAssets(),alpFetchAccount()]).then(function(res){
@@ -1152,14 +1219,20 @@ function runAnalysisSteps(){
       notifyEngine(ST.alerts);
       wlCheckAlerts(ST.alerts);
       buildMoversData();
-      $("ov").classList.remove("on");$("scanBtn").disabled=false;$("scanBtn").textContent="Run AI Market Scan";
-      render();
-      loadCharts();
-      renderMovers();
+      if($("ovProg"))$("ovProg").style.width="100%";
+      setTimeout(function(){
+        $("ov").classList.remove("on");$("scanBtn").disabled=false;$("scanBtn").classList.remove("scanning");
+        $("scanBtn").innerHTML='<svg class="scan-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="12" y1="18" x2="12" y2="22"/><line x1="2" y1="12" x2="6" y2="12"/><line x1="18" y1="12" x2="22" y2="12"/></svg>Run AI Market Scan';
+        if($("ovProg"))$("ovProg").style.width="0%";
+        render();
+        loadCharts();
+        renderMovers();
+      },300);
       return;
     }
-    $("ovS").textContent=steps[i];$("ovD").textContent="Processing "+UNI.length+" stocks...";
-    i++;setTimeout(next,280+Math.random()*180);
+    if($("ovProg"))$("ovProg").style.width=Math.round(30+i/steps.length*70)+"%";
+    $("ovS").textContent=steps[i];$("ovD").textContent="Analysing "+UNI.length+" tickers...";
+    i++;setTimeout(next,250+Math.random()*150);
   }
   next();
 }
@@ -1223,21 +1296,26 @@ function render(){
   var f;
   if(wlFilter){f=ST.alerts.filter(function(a){return wlHas(a.tk);});}
   else{f=ST.filter==="all"?ST.alerts:ST.alerts.filter(function(a){return a.tp===ST.filter;});}
-  if(!f.length){el.innerHTML='<div class="empty-v">'+(wlFilter?"No watchlisted stocks in scan results.":(ST.alerts.length?"No "+ST.filter+" alerts.":"Tap <b>Run AI Market Scan</b> to begin"))+"</div>";updS();return;}
+  if(!f.length){el.innerHTML='<div class="empty-v"><div class="empty-icon"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg></div>'+(wlFilter?"No watchlisted stocks in scan results.":(ST.alerts.length?"No "+ST.filter+" alerts.":"Your AI analyst is ready.<br>Run your first scan to discover opportunities."))+"</div>";updS();return;}
   var h="";
   for(var i=0;i<f.length;i++){
     var a=f[i],uid="a"+i+a.tk;
     var cc=a.cf>=75?"var(--grn)":a.cf>=60?"var(--amb)":"var(--tx3)";
-    var rl=a.beta>2.3?3:a.beta>1.8?2:1;
-    var rc=rl===3?"#ff4757":rl===2?"#ffb347":"#00d26a";
+    // Risk level 1-5 based on beta and other factors
+    var rl=1;if(a.beta>1.5)rl=2;if(a.beta>2.0)rl=3;if(a.beta>2.5)rl=4;if(a.beta>2.8||a.px<1)rl=5;
+    var riskColors=["var(--grn)","var(--grn)","var(--amb)","var(--red)","var(--red)"];
     var tm=new Date().toLocaleTimeString("en-GB",{hour:"2-digit",minute:"2-digit"});
-    var dots="";for(var d=1;d<=3;d++)dots+='<div class="rdd" style="background:'+(d<=rl?rc:"rgba(255,255,255,.08)")+'"></div>';
+    // Risk meter segments
+    var riskSegs="";for(var d=0;d<5;d++)riskSegs+='<div class="risk-seg" style="background:'+(d<rl?riskColors[d]:"var(--s3)")+'"></div>';
     var starred=wlHas(a.tk);
-    var liveTag=a._livePx?' <span style="color:var(--grn);font-size:8px;font-weight:700">LIVE</span>':'';
+    var liveTag=a._livePx?' <span style="color:var(--accent);font-size:9px;font-weight:600">LIVE</span>':'';
+    // Confidence ring SVG
+    var circumference=2*Math.PI*16;var dashoffset=circumference-(a.cf/100)*circumference;
+    var signalLabel=a.tp==="buy"?"LONG":a.tp==="sell"?"SHORT":"WATCH";
 
-    h+='<div class="ac signal-'+a.tp+'" style="animation-delay:'+(i*60)+'ms"><div class="ac-main">';
-    // Top row: star + ticker + badge | price + change
-    h+='<div class="ac-top"><div class="ac-lf"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"★":"☆")+'</button><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div class="ac-rt"><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
+    h+='<div class="ac signal-'+a.tp+'" style="animation-delay:'+(i*50)+'ms"><div class="ac-main">';
+    // Top row: star + ticker + badge | confidence ring + price
+    h+='<div class="ac-top"><div class="ac-lf"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"&#9733;":"&#9734;")+'</button><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+signalLabel+'</span></div><div class="ac-rt"><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
     h+='<div class="ac-co">'+a.nm+' · '+a.sec+liveTag+'</div>';
 
     // Chart with RSI sub-chart + legend
@@ -1260,11 +1338,11 @@ function render(){
     h+='<div class="ac-met"><div class="ac-met-l">R:R</div><div class="ac-met-v">'+a.rr+':1</div></div>';
     h+='</div>';
 
-    // Confidence bar
-    h+='<div class="ac-conf"><div class="conf-bar"><div class="conf-fill" style="width:'+a.cf+'%;background:'+cc+'"></div></div><div class="conf-pct" style="color:'+cc+'">'+a.cf+'%</div></div>';
+    // Confidence ring + bar
+    h+='<div class="ac-conf"><div class="conf-ring"><svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="16"/><circle class="ring-fill" cx="18" cy="18" r="16" style="stroke:'+cc+';stroke-dasharray:'+circumference+';stroke-dashoffset:'+dashoffset+'"/></svg><div class="conf-ring-val" style="color:'+cc+'">'+a.cf+'</div></div><div class="conf-bar"><div class="conf-fill" style="width:'+a.cf+'%;background:'+cc+'"></div></div><div class="conf-pct" style="color:'+cc+'">'+a.cf+'%</div></div>';
 
-    // Footer
-    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:8px"><span class="ac-tm">'+tm+'</span><div class="rdots">'+dots+'</div></div><div class="ac-ft-rt"><span>'+a.sh+' shares</span><span>£'+a.ps.toFixed(0)+'</span></div></div></div>';
+    // Footer with risk meter
+    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:10px"><span class="ac-tm">'+tm+'</span><div class="risk-meter">'+riskSegs+'</div></div><div class="ac-ft-rt"><span>'+a.sh+' shares</span><span>£'+a.ps.toFixed(0)+'</span></div></div></div>';
 
     // Expandable reasoning
     h+='<div class="ac-detail" id="det-'+uid+'"><div class="reasoning"><div class="r-title">Analyst Reasoning</div>';
@@ -1393,10 +1471,10 @@ function renderMovers(){
     h+='</div>';return h;
   }
   var html='';
-  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--grn2)">🚀</div><div class="mover-sec-t" style="color:var(--grn)">Top Gainers</div></div>'+moverCards(ST.movers.gainers,"gainer")+'</div>';
-  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--red2)">📉</div><div class="mover-sec-t" style="color:var(--red)">Top Losers</div></div>'+moverCards(ST.movers.losers,"loser")+'</div>';
-  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--blu2)">📊</div><div class="mover-sec-t" style="color:var(--blu)">Highest Volume</div></div>'+moverCards(ST.movers.volume,"volume")+'</div>';
-  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--amb2)">⚡</div><div class="mover-sec-t" style="color:var(--amb)">Most Volatile</div></div>'+moverCards(ST.movers.volatile,"volatile")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--grn2);color:var(--grn)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div><div class="mover-sec-t" style="color:var(--grn)">Top Gainers</div></div>'+moverCards(ST.movers.gainers,"gainer")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--red2);color:var(--red)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/></svg></div><div class="mover-sec-t" style="color:var(--red)">Top Losers</div></div>'+moverCards(ST.movers.losers,"loser")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--blu2);color:var(--blu)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="6" width="4" height="15"/><rect x="17" y="2" width="4" height="19"/></svg></div><div class="mover-sec-t" style="color:var(--blu)">Highest Volume</div></div>'+moverCards(ST.movers.volume,"volume")+'</div>';
+  html+='<div class="mover-sec"><div class="mover-sec-hd"><div class="mover-sec-ic" style="background:var(--amb2);color:var(--amb)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div><div class="mover-sec-t" style="color:var(--amb)">Most Volatile</div></div>'+moverCards(ST.movers.volatile,"volatile")+'</div>';
   el.innerHTML=html;
 }
 
@@ -1410,9 +1488,10 @@ $("startBtn").onclick=function(){
   $("splash").classList.add("hide");
   setTimeout(function(){
     $("splash").style.display="none";$("app").classList.add("show");
-    buildFallbackUNI();buildSettings();buildEngine();buildTabs();buildFilters();syncDisp();
+    buildFallbackUNI();buildSettings();buildEngine();buildHelp();buildTabs();buildFilters();syncDisp();
     alpFetchAccount();
     loadMoversOnBoot();// Auto-load movers immediately from API
+    loadWatchlistOnBoot();// Auto-refresh watchlist prices
     $("scanBtn").onclick=runScan;
     if(!isStandalone&&/iPhone|iPad/.test(navigator.userAgent))setTimeout(function(){$("installBanner").classList.add("show");},1200);
   },500);
