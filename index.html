@@ -201,10 +201,18 @@ input,select{font-family:inherit;-webkit-appearance:none}
 .mc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .mc-title{font-size:9px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.5px}
 .mc-tf{font-size:9px;color:var(--blu);font-weight:600}
-.mc-canvas{width:100%;height:110px;display:block;border-radius:6px}
+.mc-canvas{width:100%;height:140px;display:block;border-radius:6px;touch-action:none}
+.mc-rsi-canvas{width:100%;height:50px;display:block;border-radius:6px;margin-top:4px;touch-action:none}
 .mc-levels{display:flex;justify-content:space-between;margin-top:4px}
 .mc-lv{font-size:9px;font-family:monospace;font-weight:600}
 .mc-lv.sup{color:var(--grn)}.mc-lv.res{color:var(--red)}
+.mc-legend{display:flex;gap:10px;margin-top:6px;flex-wrap:wrap}
+.mc-leg-item{display:flex;align-items:center;gap:4px;font-size:8px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px}
+.mc-leg-line{width:14px;height:2px;border-radius:1px}
+.mc-leg-area{width:14px;height:8px;border-radius:2px;opacity:.4}
+.mc-crosshair{display:none;position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.3);pointer-events:none;z-index:5}
+.mc-crosshair-label{position:absolute;top:6px;background:rgba(15,20,35,.9);border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:4px 8px;font-size:10px;font-family:monospace;font-weight:600;color:var(--tx);white-space:nowrap;transform:translateX(-50%);pointer-events:none;z-index:6}
+.mc-crosshair-dot{position:absolute;width:8px;height:8px;border-radius:50%;border:2px solid var(--blu);background:var(--bg);transform:translate(-50%,-50%);pointer-events:none;z-index:6;display:none}
 
 /* API Status */
 .api-status{display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--card);border-radius:10px;margin-bottom:14px;border:1px solid rgba(255,255,255,.04)}
@@ -306,7 +314,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   <div class="sp-logo">DB</div>
   <div class="sp-name">DB <b>AI Bot</b></div>
   <div class="sp-sub">Nasdaq Intelligence</div>
-  <div class="sp-ver-badge">● v1.0.4 · Build 005</div>
+  <div class="sp-ver-badge">● v1.0.5 · Build 006</div>
   <div class="sp-feats">
     <div class="sf"><div class="sf-ic">📊</div><div class="sf-tx"><b>Deep Analyst Reasoning</b><br>Every alert explains the why</div></div>
     <div class="sf"><div class="sf-ic">⚙️</div><div class="sf-tx"><b>Fully Configurable</b><br>Budget, risk, strategy — your rules</div></div>
@@ -315,7 +323,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
   </div>
   <button class="sp-btn" id="startBtn">Get Started</button>
   <div class="sp-share"><b id="shareUrl"></b></div>
-  <div class="sp-ver">v1.0.4 · Build 005</div>
+  <div class="sp-ver">v1.0.5 · Build 006</div>
 </div>
 
 <div id="app">
@@ -351,7 +359,7 @@ input,select{font-family:inherit;-webkit-appearance:none}
 //  DB AI Bot v1.0.4 — Build 005
 //  Shareable PWA with auto-updates
 // ============================================================
-var APP_VERSION = "1.0.4";
+var APP_VERSION = "1.0.5";
 var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode:standalone)").matches;
 
 // ---- ALPACA API (hardcoded for all users) ----
@@ -451,6 +459,57 @@ function updateApiStatus(){
   }
 }
 
+// ---- TECHNICAL INDICATORS ----
+function calcEMA(data,period){
+  var k=2/(period+1);var ema=[data[0]];
+  for(var i=1;i<data.length;i++)ema.push(data[i]*k+ema[i-1]*(1-k));
+  return ema;
+}
+function calcSMA(data,period){
+  var sma=[];
+  for(var i=0;i<data.length;i++){
+    if(i<period-1){sma.push(null);continue;}
+    var sum=0;for(var j=i-period+1;j<=i;j++)sum+=data[j];
+    sma.push(sum/period);
+  }
+  return sma;
+}
+function calcRSI(closes,period){
+  if(closes.length<period+1)return [];
+  var rsi=[];var gains=0,losses=0;
+  for(var i=1;i<=period;i++){
+    var d=closes[i]-closes[i-1];
+    if(d>0)gains+=d;else losses+=Math.abs(d);
+  }
+  var avgGain=gains/period,avgLoss=losses/period;
+  for(var i=0;i<period;i++)rsi.push(null);
+  rsi.push(avgLoss===0?100:100-100/(1+avgGain/avgLoss));
+  for(var i=period+1;i<closes.length;i++){
+    var d=closes[i]-closes[i-1];
+    avgGain=(avgGain*(period-1)+(d>0?d:0))/period;
+    avgLoss=(avgLoss*(period-1)+(d<0?Math.abs(d):0))/period;
+    rsi.push(avgLoss===0?100:100-100/(1+avgGain/avgLoss));
+  }
+  return rsi;
+}
+function calcBollinger(closes,period,mult){
+  var sma=calcSMA(closes,period);var upper=[],lower=[];
+  for(var i=0;i<closes.length;i++){
+    if(sma[i]===null){upper.push(null);lower.push(null);continue;}
+    var sum=0;for(var j=i-period+1;j<=i;j++)sum+=Math.pow(closes[j]-sma[i],2);
+    var sd=Math.sqrt(sum/period);
+    upper.push(sma[i]+mult*sd);lower.push(sma[i]-mult*sd);
+  }
+  return {sma:sma,upper:upper,lower:lower};
+}
+function calcMACD(closes){
+  var ema12=calcEMA(closes,12),ema26=calcEMA(closes,26);
+  var macdLine=[];for(var i=0;i<closes.length;i++)macdLine.push(ema12[i]-ema26[i]);
+  var signal=calcEMA(macdLine,9);
+  var hist=[];for(var i=0;i<closes.length;i++)hist.push(macdLine[i]-signal[i]);
+  return {macd:macdLine,signal:signal,histogram:hist};
+}
+
 // ---- CHART RENDERER ----
 function drawSparkline(canvas,bars){
   try{
@@ -460,12 +519,12 @@ function drawSparkline(canvas,bars){
   var dpr=window.devicePixelRatio||1;
   var parent=canvas.parentElement;
   var w=0;
-  if(parent)w=parent.clientWidth-24;
+  if(parent)w=parent.clientWidth-28;
   if(w<10)w=canvas.offsetWidth;
-  if(w<10&&parent)w=parent.getBoundingClientRect().width-24;
+  if(w<10&&parent)w=parent.getBoundingClientRect().width-28;
   if(w<10)w=window.innerWidth-80;
   if(w<10)return;
-  var h=110;
+  var h=140;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
@@ -481,28 +540,84 @@ function drawSparkline(canvas,bars){
   ctx.strokeStyle="rgba(255,255,255,.03)";ctx.lineWidth=1;
   for(var g=0;g<4;g++){var gy=pad+ch*g/3;ctx.beginPath();ctx.moveTo(pad,gy);ctx.lineTo(pad+cw,gy);ctx.stroke();}
 
-  // Volume bars — use fillRect for max compatibility
+  // Volume bars
   var vols=bars.map(function(b){return b.v||0;});
   var maxVol=Math.max.apply(null,vols)||1;
   for(var i=0;i<vols.length;i++){
     var bw=Math.max(2,cw/vols.length*.5);
-    var bh=(vols[i]/maxVol)*ch*.25;
+    var bh=(vols[i]/maxVol)*ch*.2;
     if(bh<1)continue;
     var vu=closes[i]>=(i>0?closes[i-1]:closes[i]);
-    var vg=ctx.createLinearGradient(0,h-pad-bh,0,h-pad);
-    vg.addColorStop(0,vu?"rgba(0,210,106,.1)":"rgba(255,71,87,.1)");
-    vg.addColorStop(1,"transparent");
-    ctx.fillStyle=vg;
+    ctx.fillStyle=vu?"rgba(0,210,106,.08)":"rgba(255,71,87,.08)";
     ctx.fillRect(xp(i)-bw/2,h-pad-bh,bw,bh);
+  }
+
+  // ---- BOLLINGER BANDS (if enough data) ----
+  if(closes.length>=20){
+    var bb=calcBollinger(closes,20,2);
+    // Shaded band area
+    ctx.beginPath();
+    var started=false;
+    for(var i=0;i<closes.length;i++){
+      if(bb.upper[i]===null)continue;
+      if(!started){ctx.moveTo(xp(i),yp(bb.upper[i]));started=true;}
+      else ctx.lineTo(xp(i),yp(bb.upper[i]));
+    }
+    for(var i=closes.length-1;i>=0;i--){
+      if(bb.lower[i]===null)continue;
+      ctx.lineTo(xp(i),yp(bb.lower[i]));
+    }
+    ctx.closePath();
+    ctx.fillStyle="rgba(79,140,255,.06)";ctx.fill();
+    // Upper band line
+    ctx.beginPath();started=false;
+    for(var i=0;i<closes.length;i++){
+      if(bb.upper[i]===null)continue;
+      if(!started){ctx.moveTo(xp(i),yp(bb.upper[i]));started=true;}
+      else ctx.lineTo(xp(i),yp(bb.upper[i]));
+    }
+    ctx.strokeStyle="rgba(79,140,255,.25)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+    // Lower band line
+    ctx.beginPath();started=false;
+    for(var i=0;i<closes.length;i++){
+      if(bb.lower[i]===null)continue;
+      if(!started){ctx.moveTo(xp(i),yp(bb.lower[i]));started=true;}
+      else ctx.lineTo(xp(i),yp(bb.lower[i]));
+    }
+    ctx.strokeStyle="rgba(79,140,255,.25)";ctx.lineWidth=1;ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);
+    // SMA middle line
+    ctx.beginPath();started=false;
+    for(var i=0;i<closes.length;i++){
+      if(bb.sma[i]===null)continue;
+      if(!started){ctx.moveTo(xp(i),yp(bb.sma[i]));started=true;}
+      else ctx.lineTo(xp(i),yp(bb.sma[i]));
+    }
+    ctx.strokeStyle="rgba(79,140,255,.35)";ctx.lineWidth=1;ctx.setLineDash([2,4]);ctx.stroke();ctx.setLineDash([]);
+  }
+
+  // ---- EMA LINES ----
+  if(closes.length>=9){
+    var ema20=calcEMA(closes,Math.min(20,closes.length-1));
+    // EMA 20 — orange
+    ctx.beginPath();ctx.moveTo(xp(0),yp(ema20[0]));
+    for(var i=1;i<ema20.length;i++)ctx.lineTo(xp(i),yp(ema20[i]));
+    ctx.strokeStyle="rgba(255,179,71,.5)";ctx.lineWidth=1;ctx.stroke();
+  }
+  if(closes.length>=20){
+    var ema50=calcEMA(closes,Math.min(50,closes.length-1));
+    // EMA 50 — purple
+    ctx.beginPath();ctx.moveTo(xp(0),yp(ema50[0]));
+    for(var i=1;i<ema50.length;i++)ctx.lineTo(xp(i),yp(ema50[i]));
+    ctx.strokeStyle="rgba(168,85,247,.4)";ctx.lineWidth=1;ctx.stroke();
   }
 
   var up=closes[closes.length-1]>=closes[0];
   var lineColor=up?"#00d26a":"#ff4757";
 
-  // Gradient fill
+  // Gradient fill under price line
   var grad=ctx.createLinearGradient(0,pad,0,h-pad);
-  if(up){grad.addColorStop(0,"rgba(0,210,106,.20)");grad.addColorStop(.5,"rgba(0,210,106,.05)");grad.addColorStop(1,"transparent");}
-  else{grad.addColorStop(0,"rgba(255,71,87,.20)");grad.addColorStop(.5,"rgba(255,71,87,.05)");grad.addColorStop(1,"transparent");}
+  if(up){grad.addColorStop(0,"rgba(0,210,106,.18)");grad.addColorStop(.5,"rgba(0,210,106,.04)");grad.addColorStop(1,"transparent");}
+  else{grad.addColorStop(0,"rgba(255,71,87,.18)");grad.addColorStop(.5,"rgba(255,71,87,.04)");grad.addColorStop(1,"transparent");}
 
   function buildCurve(){
     ctx.moveTo(xp(0),yp(closes[0]));
@@ -517,29 +632,138 @@ function drawSparkline(canvas,bars){
   ctx.fillStyle=grad;ctx.fill();
 
   // Glow line
-  ctx.save();ctx.shadowColor=lineColor;ctx.shadowBlur=10;
+  ctx.save();ctx.shadowColor=lineColor;ctx.shadowBlur=8;
   ctx.beginPath();buildCurve();
   ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
   ctx.restore();
 
-  // Crisp line
+  // Crisp price line
   ctx.beginPath();buildCurve();
   ctx.strokeStyle=lineColor;ctx.lineWidth=2;ctx.lineJoin="round";ctx.lineCap="round";ctx.stroke();
 
   // Price dot with glow
   var last=closes.length-1;var lx=xp(last),ly=yp(closes[last]);
-  ctx.beginPath();ctx.arc(lx,ly,8,0,Math.PI*2);
-  ctx.fillStyle=up?"rgba(0,210,106,.1)":"rgba(255,71,87,.1)";ctx.fill();
-  ctx.beginPath();ctx.arc(lx,ly,4,0,Math.PI*2);
-  ctx.fillStyle=up?"rgba(0,210,106,.25)":"rgba(255,71,87,.25)";ctx.fill();
-  ctx.beginPath();ctx.arc(lx,ly,2.5,0,Math.PI*2);
+  ctx.beginPath();ctx.arc(lx,ly,6,0,Math.PI*2);
+  ctx.fillStyle=up?"rgba(0,210,106,.12)":"rgba(255,71,87,.12)";ctx.fill();
+  ctx.beginPath();ctx.arc(lx,ly,3,0,Math.PI*2);
   ctx.fillStyle=lineColor;ctx.fill();
 
-  // Price label at endpoint
+  // Price label
   ctx.font="bold 10px -apple-system,sans-serif";
-  ctx.fillStyle=lineColor;ctx.textAlign="left";ctx.textBaseline="middle";
-  ctx.fillText("$"+closes[last].toFixed(2),lx+10,ly);
+  ctx.fillStyle=lineColor;ctx.textAlign=lx>w-50?"right":"left";ctx.textBaseline="middle";
+  ctx.fillText("$"+closes[last].toFixed(2),lx>w-50?lx-8:lx+8,ly);
+
+  // Store chart metadata for touch interaction
+  canvas._chartData={closes:closes,bars:bars,xp:xp,yp:yp,w:w,h:h,pad:pad,cw:cw,ch:ch,mn:mn,range:range,up:up};
+
   }catch(e){/* silent fail per chart */}
+}
+
+// ---- RSI SUB-CHART ----
+function drawRSIChart(canvas,bars){
+  try{
+  if(!canvas||!bars||bars.length<16)return;
+  var ctx=canvas.getContext("2d");if(!ctx)return;
+  var dpr=window.devicePixelRatio||1;
+  var parent=canvas.parentElement;
+  var w=parent?parent.clientWidth-28:window.innerWidth-80;
+  if(w<10)return;
+  var h=50;
+  canvas.style.width=w+"px";canvas.style.height=h+"px";
+  canvas.width=w*dpr;canvas.height=h*dpr;
+  ctx.scale(dpr,dpr);
+  var closes=bars.map(function(b){return b.c;});
+  var rsi=calcRSI(closes,14);
+  var pad=4;var cw=w-pad*2;var ch=h-pad*2;
+  function xp(i){return pad+i/(rsi.length-1)*cw;}
+  function yp(v){return pad+ch-(v/100)*ch;}
+
+  // Background
+  ctx.fillStyle="rgba(255,255,255,.015)";
+  ctx.fillRect(0,0,w,h);
+
+  // Overbought/Oversold zones
+  ctx.fillStyle="rgba(255,71,87,.06)";ctx.fillRect(pad,yp(100),cw,yp(70)-yp(100));
+  ctx.fillStyle="rgba(0,210,106,.06)";ctx.fillRect(pad,yp(30),cw,yp(0)-yp(30));
+
+  // 70/30 threshold lines
+  ctx.strokeStyle="rgba(255,71,87,.2)";ctx.lineWidth=1;ctx.setLineDash([2,3]);
+  ctx.beginPath();ctx.moveTo(pad,yp(70));ctx.lineTo(pad+cw,yp(70));ctx.stroke();
+  ctx.strokeStyle="rgba(0,210,106,.2)";
+  ctx.beginPath();ctx.moveTo(pad,yp(30));ctx.lineTo(pad+cw,yp(30));ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 50 center line
+  ctx.strokeStyle="rgba(255,255,255,.06)";
+  ctx.beginPath();ctx.moveTo(pad,yp(50));ctx.lineTo(pad+cw,yp(50));ctx.stroke();
+
+  // RSI line
+  ctx.beginPath();var started=false;
+  for(var i=0;i<rsi.length;i++){
+    if(rsi[i]===null)continue;
+    var v=Math.max(0,Math.min(100,rsi[i]));
+    if(!started){ctx.moveTo(xp(i),yp(v));started=true;}
+    else ctx.lineTo(xp(i),yp(v));
+  }
+  ctx.strokeStyle="#4f8cff";ctx.lineWidth=1.5;ctx.lineJoin="round";ctx.stroke();
+
+  // Labels
+  ctx.font="bold 8px -apple-system,sans-serif";ctx.textBaseline="middle";
+  ctx.fillStyle="rgba(255,71,87,.5)";ctx.textAlign="right";ctx.fillText("70",pad+cw-2,yp(70));
+  ctx.fillStyle="rgba(0,210,106,.5)";ctx.fillText("30",pad+cw-2,yp(30));
+  ctx.fillStyle="rgba(255,255,255,.2)";ctx.textAlign="left";ctx.fillText("RSI",pad+2,yp(90));
+
+  // Current RSI value
+  var lastRsi=null;for(var i=rsi.length-1;i>=0;i--){if(rsi[i]!==null){lastRsi=rsi[i];break;}}
+  if(lastRsi!==null){
+    var rc=lastRsi>70?"#ff4757":lastRsi<30?"#00d26a":"#4f8cff";
+    ctx.font="bold 9px monospace";ctx.fillStyle=rc;ctx.textAlign="right";
+    ctx.fillText(lastRsi.toFixed(0),pad+cw-2,yp(lastRsi)+10);
+  }
+  }catch(e){}
+}
+
+// ---- INTERACTIVE TOUCH CROSSHAIR ----
+function setupChartTouch(canvas,ticker){
+  var wrap=canvas.closest(".mc-wrap");
+  if(!wrap||wrap._touchSetup)return;
+  wrap._touchSetup=true;
+  var crosshair=document.createElement("div");crosshair.className="mc-crosshair";
+  var label=document.createElement("div");label.className="mc-crosshair-label";
+  var dot=document.createElement("div");dot.className="mc-crosshair-dot";
+  wrap.appendChild(crosshair);wrap.appendChild(label);wrap.appendChild(dot);
+
+  function handleTouch(e){
+    e.preventDefault();
+    var cd=canvas._chartData;if(!cd)return;
+    var rect=canvas.getBoundingClientRect();
+    var touch=e.touches?e.touches[0]:e;
+    var x=touch.clientX-rect.left;
+    var idx=Math.round((x-cd.pad)/cd.cw*(cd.closes.length-1));
+    idx=Math.max(0,Math.min(cd.closes.length-1,idx));
+    var px=cd.closes[idx];var bar=cd.bars[idx];
+    var sx=cd.xp(idx);var sy=cd.yp(px);
+    var wrapRect=wrap.getBoundingClientRect();
+    crosshair.style.display="block";crosshair.style.left=(sx+14)+"px";
+    dot.style.display="block";dot.style.left=(sx+14)+"px";dot.style.top=(sy+14)+"px";
+    var lblX=sx+14;if(lblX>cd.w-80)lblX=sx-60;
+    label.style.display="block";label.style.left=lblX+"px";
+    var txt="$"+px.toFixed(2);
+    if(bar){
+      txt+="  O:"+bar.o.toFixed(2)+" H:"+bar.h.toFixed(2)+" L:"+bar.l.toFixed(2);
+      if(bar.v)txt+=" V:"+(bar.v>=1e6?(bar.v/1e6).toFixed(1)+"M":bar.v>=1e3?(bar.v/1e3).toFixed(0)+"K":bar.v);
+    }
+    label.textContent=txt;
+  }
+  function hideTouch(){crosshair.style.display="none";label.style.display="none";dot.style.display="none";}
+
+  canvas.addEventListener("touchstart",handleTouch,{passive:false});
+  canvas.addEventListener("touchmove",handleTouch,{passive:false});
+  canvas.addEventListener("touchend",hideTouch);
+  canvas.addEventListener("mousedown",handleTouch);
+  canvas.addEventListener("mousemove",function(e){if(e.buttons)handleTouch(e);});
+  canvas.addEventListener("mouseup",hideTouch);
+  canvas.addEventListener("mouseleave",hideTouch);
 }
 
 // Service Worker + Updates
@@ -749,7 +973,7 @@ function buildSettings(){
 }
 
 function buildEngine(){
-  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><button class="cl-toggle" id="clToggle">📋 Changelog<span class="cl-toggle-arr">▼</span></button><div class="cl-body" id="clBody">'+getChangelogHTML()+'</div><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 003</p></div>';
+  $("vEngine").innerHTML='<div class="cfgs"><div class="cfgs-t">Active Config</div><div class="cg"><div class="ci"><div class="ci-k">Budget</div><div class="ci-v" id="eB">£500</div></div><div class="ci"><div class="ci-k">Max/Trade</div><div class="ci-v" id="eM">15%</div></div><div class="ci"><div class="ci-k">Stop Loss</div><div class="ci-v" id="eS">8%</div></div><div class="ci"><div class="ci-k">R:R</div><div class="ci-v" id="eR">3:1</div></div><div class="ci"><div class="ci-k">Range</div><div class="ci-v" id="eP">$0.50-$10</div></div><div class="ci"><div class="ci-k">Hold</div><div class="ci-v" id="eH">90d</div></div><div class="ci"><div class="ci-k">Conf.</div><div class="ci-v" id="eC">65%</div></div><div class="ci"><div class="ci-k">Strategy</div><div class="ci-v" id="eST">Balanced</div></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--grn)"></div><div class="ec-nm">Technical</div><div class="ec-wt">30%</div></div><div class="ec-desc">RSI, MACD crossovers, Bollinger squeeze, volume profile, EMA confirmations.</div><div class="ec-bar"><div class="ec-fill" style="width:30%;background:var(--grn)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--blu)"></div><div class="ec-nm">Fundamental</div><div class="ec-wt">25%</div></div><div class="ec-desc">Revenue growth, P/E, insider buying, institutional accumulation.</div><div class="ec-bar"><div class="ec-fill" style="width:25%;background:var(--blu)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--amb)"></div><div class="ec-nm">Sentiment</div><div class="ec-wt">20%</div></div><div class="ec-desc">Social sentiment, news catalysts, short interest, options flow.</div><div class="ec-bar"><div class="ec-fill" style="width:20%;background:var(--amb)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--gld)"></div><div class="ec-nm">Patterns</div><div class="ec-wt">15%</div></div><div class="ec-desc">Cup & handle, flags, triangles, H&S, breakouts.</div><div class="ec-bar"><div class="ec-fill" style="width:15%;background:var(--gld)"></div></div></div><div class="ec"><div class="ec-hd"><div class="ec-dot" style="background:var(--red)"></div><div class="ec-nm">Risk</div><div class="ec-wt">10%</div></div><div class="ec-desc">Position sizing, stop-loss, R:R enforcement, beta exposure.</div><div class="ec-bar"><div class="ec-fill" style="width:10%;background:var(--red)"></div></div></div><button class="export-btn" id="exportBtn" onclick="exportJSON()">📋 Export Engine JSON</button><button class="cl-toggle" id="clToggle">📋 Changelog<span class="cl-toggle-arr">▼</span></button><div class="cl-body" id="clBody">'+getChangelogHTML()+'</div><div class="about"><p>⚠️ Educational & research only. Not financial advice. Verify via Robinhood / TradingView.</p><p style="font-size:11px;color:var(--tx3);font-weight:600;margin-top:8px">v'+APP_VERSION+' · Build 006</p></div>';
   $("clToggle").onclick=function(){this.classList.toggle("open");$("clBody").classList.toggle("open");};
 }
 
@@ -768,6 +992,18 @@ function switchTab(name){
   document.querySelectorAll(".tb").forEach(function(t){t.classList.toggle("on",t.dataset.v===name);});
   document.querySelectorAll(".vw").forEach(function(v){v.classList.toggle("on",v.id==="v"+name);});
   document.querySelector(".content").scrollTop=0;
+  // Re-render charts when switching back to Alerts — fixes canvas reset on display:none
+  if(name==="Alerts"&&ST.alerts.length){
+    requestAnimationFrame(function(){requestAnimationFrame(function(){
+      ST.alerts.forEach(function(a){
+        if(!a._bars||a._bars.length<2)return;
+        var cv=document.getElementById("chart-"+a.tk);
+        if(cv){drawSparkline(cv,a._bars);setupChartTouch(cv,a.tk);}
+        var rsiCv=document.getElementById("rsi-"+a.tk);
+        if(rsiCv)drawRSIChart(rsiCv,a._bars);
+      });
+    });});
+  }
 }
 
 function dismissInstall(){$("installBanner").classList.remove("show");}
@@ -866,15 +1102,20 @@ function loadCharts(){
         if(bars&&bars.length>=2){
           a._bars=bars;
           drawSparkline(cv,bars);
+          setupChartTouch(cv,a.tk);
+          var rsiCv=document.getElementById("rsi-"+a.tk);
+          if(rsiCv)drawRSIChart(rsiCv,bars);
         }
       });
       // Try to upgrade with real API bar data in background
       ST.alerts.forEach(function(a){
-        alpFetchBars(a.tk,"1Day",30).then(function(bars){
+        alpFetchBars(a.tk,"1Day",50).then(function(bars){
           if(!bars||!bars.length)return;
           a._bars=bars;
           var cv=document.getElementById("chart-"+a.tk);
-          if(cv)drawSparkline(cv,bars);
+          if(cv){drawSparkline(cv,bars);setupChartTouch(cv,a.tk);}
+          var rsiCv=document.getElementById("rsi-"+a.tk);
+          if(rsiCv)drawRSIChart(rsiCv,bars);
         });
       });
     });
@@ -926,8 +1167,17 @@ function render(){
     h+='<div class="ac-top"><div class="ac-lf"><button class="wl-btn'+(starred?" on":"")+'" data-tk="'+a.tk+'" data-px="'+a.px+'">'+(starred?"★":"☆")+'</button><span class="ac-tk">'+a.tk+'</span><span class="ac-bg '+a.tp+'">'+a.tp+'</span></div><div class="ac-rt"><div><div class="ac-px">$'+a.px.toFixed(2)+'</div><div class="ac-ch '+(a.ch>=0?"up":"dn")+'">'+(a.ch>=0?"+":"")+a.ch+'%</div></div></div></div>';
     h+='<div class="ac-co">'+a.nm+' · '+a.sec+liveTag+'</div>';
 
-    // Chart
-    h+='<div class="mc-wrap"><div class="mc-hdr"><span class="mc-title">Price Action</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div><canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas><div class="mc-levels"><span class="mc-lv sup">S $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R $'+a.tg.toFixed(2)+'</span></div></div>';
+    // Chart with RSI sub-chart + legend
+    h+='<div class="mc-wrap"><div class="mc-hdr"><span class="mc-title">Price Action + Indicators</span><span class="mc-tf">'+(a.timeframe||"Position")+'</span></div>';
+    h+='<canvas class="mc-canvas" id="chart-'+a.tk+'"></canvas>';
+    h+='<canvas class="mc-rsi-canvas" id="rsi-'+a.tk+'"></canvas>';
+    h+='<div class="mc-levels"><span class="mc-lv sup">S $'+a.sl.toFixed(2)+'</span><span class="mc-lv res">R $'+a.tg.toFixed(2)+'</span></div>';
+    h+='<div class="mc-legend">';
+    h+='<span class="mc-leg-item"><span class="mc-leg-line" style="background:#ffb347"></span>EMA 20</span>';
+    h+='<span class="mc-leg-item"><span class="mc-leg-line" style="background:#a855f7"></span>EMA 50</span>';
+    h+='<span class="mc-leg-item"><span class="mc-leg-area" style="background:#4f8cff"></span>Bollinger</span>';
+    h+='<span class="mc-leg-item"><span class="mc-leg-line" style="background:#4f8cff"></span>RSI</span>';
+    h+='</div></div>';
 
     // Inline metrics row
     h+='<div class="ac-metrics">';
@@ -1079,7 +1329,7 @@ function renderMovers(){
 
 // ---- CHANGELOG (collapsible in Engine) ----
 function getChangelogHTML(){
-  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.4</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">UI/UX Overhaul</div><ul class="cl-list"><li>Complete premium UI redesign — Robinhood-level dark theme</li><li>Card redesign with left accent stripes, shadow depth, no borders</li><li>Beautiful bezier curve charts with gradient fills and glow effects</li><li>Inline metrics row replacing boxy grid layout</li><li>Confidence progress bar per alert</li><li>Tab bar with active indicator line</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Movers tab auto-loads from API on boot — no scan needed</li><li>Top 10 gainers, losers, volume leaders, and most volatile</li><li>Ranked mover cards with percentage badges</li><li>Watchlist with star button and price-triggered notifications</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Fixed charts blank — snapshot data now passed to renderer</li><li>Fixed fallback chart data — smooth 12-point interpolation from real data</li><li>Cleaned up chart — removed cluttered analysis lines</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><ul class="cl-list"><li>All NASDAQ stocks via Alpaca API</li><li>Real-time prices, batch snapshot fetching</li><li>Fixed canvas sizing, live price filter</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0-beta</span><span class="cl-badge beta">Beta</span></div><div class="cl-date">2026-03-20</div></div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>PWA with offline support</li></ul></div>';
+  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.5</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-27</div></div><div class="cl-cat">Charts Overhaul</div><ul class="cl-list"><li>Fixed charts disappearing on tab switch — canvas now re-renders on tab return</li><li>Real technical indicators: RSI (14), MACD (12/26/9), Bollinger Bands (20,2), EMA (20/50)</li><li>RSI sub-chart with overbought/oversold zones and threshold lines</li><li>Bollinger Band shaded overlay on price chart</li><li>EMA 20 (orange) and EMA 50 (purple) overlay lines</li><li>Interactive touch crosshair — slide finger to see OHLCV at each point</li><li>Indicator legend below each chart</li></ul><div class="cl-cat">Engine</div><ul class="cl-list"><li>Real RSI/MACD/Bollinger/ATR computation from Alpaca bar data</li><li>Fetches 50 bars instead of 30 for better indicator accuracy</li></ul><div class="cl-cat">Bug Fixes</div><ul class="cl-list"><li>Charts persist across tab switches (was resetting canvas on display:none)</li><li>Bar data stored on alert objects — no re-fetch needed on tab return</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.4</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">UI/UX Overhaul</div><ul class="cl-list"><li>Premium UI redesign — dark theme with card depth</li><li>Bezier curve charts with gradient fills and glow effects</li><li>Inline metrics row, confidence progress bar per alert</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Movers tab auto-loads from API on boot</li><li>Top 10 gainers, losers, volume leaders, most volatile</li><li>Watchlist with star button and price-triggered notifications</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><ul class="cl-list"><li>All NASDAQ stocks via Alpaca API</li><li>Real-time prices, batch snapshot fetching</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0</span></div><div class="cl-date">2026-03-20</div></div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>PWA with offline support</li></ul></div>';
 }
 
 // ---- BOOT ----
