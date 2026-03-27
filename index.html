@@ -95,34 +95,36 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 /* APP */
 #app{display:none;flex-direction:column;min-height:100vh;min-height:100dvh}
 #app.show{display:flex}
-.nav{padding:calc(var(--safe-t) + 12px) calc(var(--safe-r) + 20px) 12px calc(var(--safe-l) + 20px);background:var(--bg);position:sticky;top:0;z-index:50}
+.nav{padding:calc(var(--safe-t) + 10px) calc(var(--safe-r) + 20px) 10px calc(var(--safe-l) + 20px);background:var(--bg);position:sticky;top:0;z-index:50}
 .nav-row{display:flex;align-items:center;justify-content:space-between}
 .nav-brand{display:flex;align-items:center;gap:10px}
-.nav-mark{width:30px;height:30px;border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-family:'SF Mono',monospace;font-weight:800;font-size:11px;color:var(--accent);background:var(--s1)}
-.nav-name{font-size:16px;font-weight:600}.nav-name b{color:var(--accent);font-weight:400}
+.nav-mark{width:32px;height:32px;border-radius:var(--r-md);display:flex;align-items:center;justify-content:center;font-family:'SF Mono',monospace;font-weight:800;font-size:12px;color:var(--accent);background:var(--s1)}
+.nav-name{font-size:17px;font-weight:700;letter-spacing:-.02em}.nav-name b{color:var(--accent);font-weight:400}
 .nav-rt{display:flex;align-items:center;gap:8px}
-.npill{font-size:11px;color:var(--tx2);background:var(--s1);border-radius:var(--r-full);padding:6px 12px;display:flex;align-items:center;gap:6px;font-weight:500}
+.npill{font-size:11px;color:var(--tx2);background:var(--s1);border-radius:var(--r-full);padding:6px 14px;display:flex;align-items:center;gap:6px;font-weight:500}
 .ndot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
 
 .content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--safe-b) + 80px)}
-.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,23,.95);-webkit-backdrop-filter:saturate(180%) blur(24px);backdrop-filter:saturate(180%) blur(24px);border-top:1px solid var(--brd);padding:4px var(--safe-r) calc(var(--safe-b) + 2px) var(--safe-l);display:flex;z-index:60}
-.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 0 4px;background:none;color:var(--tx3);position:relative;transition:color var(--dur-norm)}
+.tabs{position:fixed;bottom:0;left:0;right:0;background:rgba(10,14,23,.97);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--brd);padding:6px var(--safe-r) calc(var(--safe-b) + 4px) var(--safe-l);display:flex;z-index:60}
+.tb{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:6px 0 2px;background:none;color:var(--tx3);position:relative;transition:color var(--dur-fast)}
 .tb.on{color:var(--accent)}
-.tb.on::after{content:"";position:absolute;top:0;left:50%;transform:translateX(-50%);width:20px;height:2px;border-radius:1px;background:var(--accent)}
-.tb-ic{font-size:18px;height:22px;display:flex;align-items:center;justify-content:center}.tb-lb{font-size:9px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.tb.on::after{content:"";position:absolute;top:-1px;left:50%;transform:translateX(-50%);width:24px;height:2px;border-radius:1px;background:var(--accent)}
+.tb-ic{height:24px;display:flex;align-items:center;justify-content:center}.tb-ic svg{width:22px;height:22px}
+.tb-lb{font-size:9px;font-weight:600;letter-spacing:.4px;text-transform:uppercase}
 
 .vw{display:none;padding:var(--sp-md) calc(var(--safe-r) + 20px) var(--sp-md) calc(var(--safe-l) + 20px)}.vw.on{display:block}
 
-/* Stats */
-.qsg{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-sm);margin-bottom:var(--sp-md)}
-.qs{background:var(--card-bg);border-radius:var(--r-lg);padding:16px;box-shadow:var(--shadow-card)}
-.qs-l{font-size:11px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:8px}
-.qs-v{font-size:22px;font-weight:700;letter-spacing:-.02em}.qs-n{font-size:11px;color:var(--tx3);margin-top:4px}
+/* Stats — horizontal scroll strip */
+.qsg{display:flex;gap:var(--sp-sm);margin-bottom:var(--sp-md);overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0}
+.qsg::-webkit-scrollbar{display:none}
+.qs{min-width:120px;flex-shrink:0;scroll-snap-align:start;background:var(--card-bg);border-radius:var(--r-lg);padding:14px 16px;box-shadow:var(--shadow-card)}
+.qs-l{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:6px}
+.qs-v{font-size:20px;font-weight:700;letter-spacing:-.02em}.qs-n{font-size:10px;color:var(--tx3);margin-top:3px}
 
 /* Scan Button — premium CTA */
-.scan-btn{width:100%;padding:18px;background:var(--s1);border:1px solid var(--accent-glow);border-radius:var(--r-lg);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:var(--sp-md);display:flex;align-items:center;justify-content:center;gap:10px;transition:all var(--dur-norm) var(--ease-out);position:relative;overflow:hidden}
-.scan-btn:hover,.scan-btn:active{background:var(--accent-dim);border-color:var(--accent)}
+.scan-btn{width:100%;padding:16px;background:linear-gradient(135deg,rgba(0,212,170,.12),rgba(0,212,170,.04));border:1px solid rgba(0,212,170,.2);border-radius:var(--r-xl);font-size:15px;font-weight:700;color:var(--accent);margin-bottom:var(--sp-md);display:flex;align-items:center;justify-content:center;gap:10px;transition:all var(--dur-norm) var(--ease-out);position:relative;overflow:hidden}
+.scan-btn:hover,.scan-btn:active{background:linear-gradient(135deg,rgba(0,212,170,.2),rgba(0,212,170,.08));border-color:var(--accent)}
 .scan-btn:disabled{opacity:.5;transform:none;border-color:var(--s3)}
 .scan-btn .scan-icon{display:inline-block;width:18px;height:18px}
 /* Shimmer loading animation for scan */
@@ -135,61 +137,56 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .pl{padding:6px 14px;font-size:11px;font-weight:600;border-radius:var(--r-full);background:var(--s1);color:var(--tx3);transition:all var(--dur-norm)}.pl.on{background:var(--accent-dim);color:var(--accent)}
 
 /* Cards */
-.al{display:flex;flex-direction:column;gap:12px}
-@keyframes cardIn{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
-.ac{background:var(--card-bg);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--shadow-card);position:relative;opacity:0;transform:translateY(16px);animation:cardIn .4s var(--ease-out) forwards}
-.ac::before{content:"";position:absolute;top:0;left:0;bottom:0;width:3px}
+.al{display:flex;flex-direction:column;gap:14px}
+@keyframes cardIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.ac{background:var(--card-bg);border-radius:var(--r-xl);overflow:hidden;box-shadow:var(--shadow-card);position:relative;opacity:0;transform:translateY(12px);animation:cardIn .4s var(--ease-out) forwards}
+.ac::before{content:"";position:absolute;top:0;left:0;right:0;height:2px}
 .ac.signal-buy::before{background:var(--grn)}
 .ac.signal-sell::before{background:var(--red)}
 .ac.signal-watch::before{background:var(--amb)}
-.ac-main{padding:16px 16px 12px 20px}
-.ac-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.ac-main{padding:20px 20px 16px}
+.ac-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px}
 .ac-lf{display:flex;align-items:center;gap:10px}
-.ac-tk{font-size:18px;font-weight:700;letter-spacing:-.02em}
-.ac-bg{font-size:10px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:.05em}
+.ac-tk{font-size:20px;font-weight:800;letter-spacing:-.03em}
+.ac-bg{font-size:9px;font-weight:700;padding:4px 10px;border-radius:var(--r-full);text-transform:uppercase;letter-spacing:.06em}
 .ac-bg.buy{background:var(--grn2);color:var(--grn)}.ac-bg.sell{background:var(--red2);color:var(--red)}.ac-bg.watch{background:var(--amb2);color:var(--amb)}
-.ac-rt{display:flex;align-items:center;gap:10px}
-.ac-px{font-size:17px;font-weight:700;text-align:right;font-family:'SF Mono',ui-monospace,monospace;letter-spacing:-.02em}
-.ac-ch{font-size:11px;font-weight:700;text-align:right;font-family:monospace}.ac-ch.up{color:var(--grn)}.ac-ch.dn{color:var(--red)}
-.ac-co{font-size:12px;color:var(--tx3);margin-bottom:12px}
+.ac-rt{text-align:right}
+.ac-px{font-size:20px;font-weight:700;font-family:'SF Mono',ui-monospace,monospace;letter-spacing:-.03em}
+.ac-ch{font-size:12px;font-weight:700;font-family:monospace;margin-top:2px}.ac-ch.up{color:var(--grn)}.ac-ch.dn{color:var(--red)}
+.ac-co{font-size:12px;color:var(--tx3);margin-bottom:6px}
 
 /* Inline Metrics Row */
-.ac-metrics{display:flex;align-items:center;gap:0;margin:12px 0;padding:12px 0;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
+.ac-metrics{display:flex;align-items:center;gap:0;margin:10px 0;padding:10px 0;border-top:1px solid var(--brd);border-bottom:1px solid var(--brd)}
 .ac-met{flex:1;text-align:center;position:relative}
 .ac-met:not(:last-child)::after{content:"";position:absolute;right:0;top:4px;bottom:4px;width:1px;background:var(--brd)}
-.ac-met-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:4px}
-.ac-met-v{font-size:13px;font-weight:700;font-family:'SF Mono',monospace}
+.ac-met-l{font-size:9px;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em;font-weight:500;margin-bottom:3px}
+.ac-met-v{font-size:14px;font-weight:700;font-family:'SF Mono',monospace}
 
-/* Confidence — circular ring */
-.ac-conf{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-.conf-ring{position:relative;width:40px;height:40px;flex-shrink:0}
-.conf-ring svg{width:40px;height:40px;transform:rotate(-90deg)}
-.conf-ring .ring-bg{fill:none;stroke:var(--s3);stroke-width:3}
-.conf-ring .ring-fill{fill:none;stroke-width:3;stroke-linecap:round;transition:stroke-dashoffset .8s var(--ease-out)}
-.conf-ring-val{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;font-family:monospace}
+/* Confidence — clean bar only */
+.ac-conf{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.conf-ring{display:none}
 .conf-bar{flex:1;height:4px;border-radius:2px;background:var(--s3);overflow:hidden}
 .conf-fill{height:100%;border-radius:2px;transition:width .8s var(--ease-out)}
-.conf-pct{font-size:12px;font-weight:700;font-family:monospace;min-width:36px;text-align:right}
+.conf-lbl{font-size:10px;color:var(--tx3);font-weight:500;white-space:nowrap}
+.conf-pct{font-size:13px;font-weight:700;font-family:monospace;min-width:36px;text-align:right}
 
 /* Risk Meter — 5 segments */
 .risk-meter{display:flex;gap:3px;align-items:center}
 .risk-seg{width:16px;height:6px;border-radius:2px;background:var(--s3);transition:background var(--dur-norm)}
 
 /* Footer */
-.ac-ft{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.ac-ft{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px}
 .ac-tm{font-size:10px;color:var(--tx3);font-family:monospace}
-.ac-ft-rt{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--tx3)}
-.rdots{display:flex;gap:2px;align-items:center}
-.rdd{width:8px;height:3px;border-radius:1.5px;background:var(--s3)}
+.ac-ft-rt{font-size:11px;color:var(--tx3)}
 
-.ac-expand{width:100%;padding:14px;background:transparent;border:none;border-top:1px solid var(--brd);color:var(--tx3);font-size:12px;font-weight:600;text-align:center;letter-spacing:.03em;transition:color var(--dur-fast)}
-.ac-expand:hover,.ac-expand:active{color:var(--accent)}
-.ac-detail{display:none;padding:0 16px 16px 20px}.ac-detail.open{display:block}
-.reasoning{background:var(--s2);border-radius:var(--r-md);padding:16px}
-.r-title{font-size:10px;font-weight:500;color:var(--accent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;padding-left:10px;border-left:2px solid var(--accent)}
-.rg{margin-bottom:14px}.rg:last-child{margin-bottom:0}
-.rg-lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
-.rg-dot{width:6px;height:6px;border-radius:50%}
+.ac-expand{width:100%;padding:14px;background:transparent;border:none;border-top:1px solid var(--brd);color:var(--accent);font-size:12px;font-weight:600;text-align:center;letter-spacing:.03em;transition:all var(--dur-fast)}
+.ac-expand:active{background:var(--accent-dim)}
+.ac-detail{display:none;padding:0 20px 20px;max-height:0;overflow:hidden;transition:max-height .3s var(--ease-out)}.ac-detail.open{display:block;max-height:none}
+.reasoning{background:var(--s1);border-radius:var(--r-lg);padding:16px 18px}
+.r-title{font-size:10px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px}
+.rg{margin-bottom:16px}.rg:last-child{margin-bottom:0}
+.rg-lb{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.rg-dot{width:5px;height:5px;border-radius:50%}
 .rg-lb.tech{color:var(--grn)}.rg-lb.tech .rg-dot{background:var(--grn)}
 .rg-lb.fund{color:var(--blu)}.rg-lb.fund .rg-dot{background:var(--blu)}
 .rg-lb.sent{color:var(--amb)}.rg-lb.sent .rg-dot{background:var(--amb)}
@@ -223,13 +220,14 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 @keyframes countUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
 .num-anim{animation:countUp .4s var(--ease-out) both}
 
-.empty-v{text-align:center;padding:80px 20px;color:var(--tx3);font-size:14px;line-height:1.6}
-.empty-v .empty-icon{font-size:40px;margin-bottom:16px;opacity:.3}
+.empty-v{text-align:center;padding:60px 24px;color:var(--tx3);font-size:14px;line-height:1.7}
+.empty-v .empty-icon{margin-bottom:20px;opacity:.2}
+.empty-v .empty-icon svg{width:56px;height:56px}
 
 /* Skeleton loading */
 @keyframes skeletonShimmer{0%{background-position:-200px 0}100%{background-position:200px 0}}
-.skeleton{border-radius:var(--r-md);background:linear-gradient(90deg,var(--s1) 25%,var(--s2) 50%,var(--s1) 75%);background-size:400px 100%;animation:skeletonShimmer 1.5s infinite linear}
-.skel-card{height:180px;border-radius:var(--r-lg);margin-bottom:12px}
+.skeleton{border-radius:var(--r-xl);background:linear-gradient(90deg,var(--s1) 25%,var(--s2) 50%,var(--s1) 75%);background-size:400px 100%;animation:skeletonShimmer 1.5s infinite linear}
+.skel-card{height:220px;border-radius:var(--r-xl);margin-bottom:14px}
 .skel-stat{height:80px;border-radius:var(--r-lg)}
 
 /* Settings */
@@ -268,22 +266,20 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .about p{font-size:12px;color:var(--tx3);line-height:1.5}
 
 /* Chart */
-.mc-wrap{margin:12px 0;background:var(--s1);border-radius:var(--r-lg);padding:14px 14px 10px;position:relative}
-.mc-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-.mc-title{font-size:11px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.08em}
-.mc-tf{font-size:10px;color:var(--accent);font-weight:600}
-.mc-canvas{width:100%;height:140px;display:block;border-radius:var(--r-sm);touch-action:none}
-.mc-rsi-canvas{width:100%;height:50px;display:block;border-radius:var(--r-sm);margin-top:4px;touch-action:none}
-.mc-levels{display:flex;justify-content:space-between;margin-top:6px}
+.mc-wrap{margin:8px -6px 10px;position:relative;padding:0 6px}
+.mc-hdr{display:none}
+.mc-canvas{width:100%;height:160px;display:block;border-radius:var(--r-sm);touch-action:none}
+.mc-rsi-canvas{width:100%;height:44px;display:block;border-radius:var(--r-sm);margin-top:2px;touch-action:none}
+.mc-levels{display:flex;justify-content:space-between;margin-top:6px;padding:0 4px}
 .mc-lv{font-size:10px;font-family:'SF Mono',monospace;font-weight:600}
 .mc-lv.sup{color:var(--grn)}.mc-lv.res{color:var(--red)}
-.mc-legend{display:flex;gap:10px;margin-top:8px;flex-wrap:wrap}
-.mc-leg-item{display:flex;align-items:center;gap:4px;font-size:9px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.05em}
-.mc-leg-line{width:14px;height:2px;border-radius:1px}
-.mc-leg-area{width:14px;height:8px;border-radius:2px;opacity:.4}
-.mc-crosshair{display:none;position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.2);pointer-events:none;z-index:5}
-.mc-crosshair-label{position:absolute;top:8px;background:var(--s2);border:1px solid var(--brd2);border-radius:var(--r-sm);padding:6px 10px;font-size:10px;font-family:'SF Mono',monospace;font-weight:600;color:var(--tx);white-space:nowrap;transform:translateX(-50%);pointer-events:none;z-index:6;box-shadow:var(--shadow-elevated)}
-.mc-crosshair-dot{position:absolute;width:8px;height:8px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);transform:translate(-50%,-50%);pointer-events:none;z-index:6;display:none}
+.mc-legend{display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;padding:0 4px}
+.mc-leg-item{display:flex;align-items:center;gap:3px;font-size:8px;font-weight:500;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em}
+.mc-leg-line{width:12px;height:2px;border-radius:1px}
+.mc-leg-area{width:12px;height:6px;border-radius:2px;opacity:.4}
+.mc-crosshair{display:none;position:absolute;top:0;bottom:0;width:1px;background:rgba(255,255,255,.15);pointer-events:none;z-index:5}
+.mc-crosshair-label{display:none;position:absolute;top:4px;left:50%;background:var(--s2);border:1px solid var(--brd2);border-radius:var(--r-sm);padding:5px 10px;font-size:11px;font-family:'SF Mono',monospace;font-weight:600;color:var(--tx);white-space:nowrap;transform:translateX(-50%);pointer-events:none;z-index:6;box-shadow:var(--shadow-elevated)}
+.mc-crosshair-dot{position:absolute;width:10px;height:10px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);transform:translate(-50%,-50%);pointer-events:none;z-index:6;display:none;box-shadow:0 0 8px rgba(0,212,170,.4)}
 
 /* API Status */
 .api-status{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--card-bg);border-radius:var(--r-lg);margin-bottom:var(--sp-md);box-shadow:var(--shadow-card)}
@@ -329,8 +325,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 .ov-progress-fill{height:100%;background:var(--accent);border-radius:2px;width:0;transition:width .3s var(--ease-out)}
 
 /* Watchlist Button */
-.wl-btn{width:34px;height:34px;border-radius:var(--r-sm);background:var(--s2);color:var(--tx3);font-size:16px;display:flex;align-items:center;justify-content:center;transition:all var(--dur-norm);flex-shrink:0}
-.wl-btn.on{background:var(--accent-dim);color:var(--accent)}
+.wl-btn{width:32px;height:32px;border-radius:var(--r-full);background:transparent;color:var(--tx3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all var(--dur-fast);flex-shrink:0}
+.wl-btn:active{transform:scale(1.2)}
+.wl-btn.on{color:var(--accent);text-shadow:0 0 8px rgba(0,212,170,.4)}
 .wl-pill{padding:6px 14px;font-size:11px;font-weight:600;border-radius:var(--r-full);background:var(--accent-dim);color:var(--accent);display:none;transition:all .2s}
 .wl-pill.show{display:inline-block}
 
@@ -412,7 +409,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   <div class="sp-logo">DB</div>
   <div class="sp-name">DB <b>AI Bot</b></div>
   <div class="sp-sub">Nasdaq Intelligence</div>
-  <div class="sp-ver-badge">v2.0.0 · Build 007</div>
+  <div class="sp-ver-badge">v2.1.0 · Build 008</div>
   <div class="sp-feats">
     <div class="sf"><div class="sf-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 4-6"/></svg></div><div class="sf-tx"><b>Deep Analyst Reasoning</b><br>Every alert explains the why</div></div>
     <div class="sf"><div class="sf-ic"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg></div><div class="sf-tx"><b>Fully Configurable</b><br>Budget, risk, strategy — your rules</div></div>
@@ -421,7 +418,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
   </div>
   <button class="sp-btn" id="startBtn">Get Started</button>
   <div class="sp-share"><b id="shareUrl"></b></div>
-  <div class="sp-ver">v2.0.0 · Build 007</div>
+  <div class="sp-ver">v2.1.0 · Build 008</div>
 </div>
 
 <div id="app">
@@ -455,10 +452,10 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid 
 
 <script>
 // ============================================================
-//  DB AI Bot v2.0.0 — Build 007
+//  DB AI Bot v2.1.0 — Build 008
 //  Shareable PWA with auto-updates
 // ============================================================
-var APP_VERSION = "2.0.0";
+var APP_VERSION = "2.1.0";
 var isStandalone = window.navigator.standalone === true || window.matchMedia("(display-mode:standalone)").matches;
 
 // ---- ALPACA API (hardcoded for all users) ----
@@ -619,14 +616,17 @@ function drawSparkline(canvas,bars){
   var ctx=canvas.getContext("2d");
   if(!ctx)return;
   var dpr=window.devicePixelRatio||1;
-  var parent=canvas.parentElement;
+  var wrap=canvas.closest(".mc-wrap");
+  var card=canvas.closest(".ac-main")||canvas.closest(".ac");
   var w=0;
-  if(parent)w=parent.clientWidth-28;
-  if(w<10)w=canvas.offsetWidth;
-  if(w<10&&parent)w=parent.getBoundingClientRect().width-28;
-  if(w<10)w=window.innerWidth-80;
+  // Use wrap or card width minus padding
+  if(wrap&&wrap.offsetWidth>0)w=wrap.offsetWidth-12;
+  if(w<10&&card&&card.offsetWidth>0)w=card.offsetWidth-40;
+  if(w<10&&canvas.offsetWidth>0)w=canvas.offsetWidth;
+  if(w<10){var cs=getComputedStyle(canvas);w=parseFloat(cs.width)||0;}
+  if(w<10)w=window.innerWidth-56;
   if(w<10)return;
-  var h=140;
+  var h=160;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
@@ -767,10 +767,14 @@ function drawRSIChart(canvas,bars){
   if(!canvas||!bars||bars.length<16)return;
   var ctx=canvas.getContext("2d");if(!ctx)return;
   var dpr=window.devicePixelRatio||1;
-  var parent=canvas.parentElement;
-  var w=parent?parent.clientWidth-28:window.innerWidth-80;
+  var wrap=canvas.closest(".mc-wrap");
+  var card=canvas.closest(".ac-main")||canvas.closest(".ac");
+  var w=0;
+  if(wrap&&wrap.offsetWidth>0)w=wrap.offsetWidth-12;
+  if(w<10&&card&&card.offsetWidth>0)w=card.offsetWidth-40;
+  if(w<10)w=window.innerWidth-56;
   if(w<10)return;
-  var h=50;
+  var h=44;
   canvas.style.width=w+"px";canvas.style.height=h+"px";
   canvas.width=w*dpr;canvas.height=h*dpr;
   ctx.scale(dpr,dpr);
@@ -839,19 +843,24 @@ function setupChartTouch(canvas,ticker){
     e.preventDefault();
     var cd=canvas._chartData;if(!cd)return;
     var rect=canvas.getBoundingClientRect();
+    var wrapRect=wrap.getBoundingClientRect();
     var touch=e.touches?e.touches[0]:e;
     var x=touch.clientX-rect.left;
     var idx=Math.round((x-cd.pad)/cd.cw*(cd.closes.length-1));
     idx=Math.max(0,Math.min(cd.closes.length-1,idx));
     var px=cd.closes[idx];var bar=cd.bars[idx];
     var sx=cd.xp(idx);var sy=cd.yp(px);
-    var wrapRect=wrap.getBoundingClientRect();
-    crosshair.style.display="block";crosshair.style.left=(sx+14)+"px";
-    dot.style.display="block";dot.style.left=(sx+14)+"px";dot.style.top=(sy+14)+"px";
-    var lblX=sx+14;if(lblX>cd.w-80)lblX=sx-60;
+    // Position relative to wrap — account for canvas offset within wrap
+    var canvasOffsetLeft=rect.left-wrapRect.left;
+    var canvasOffsetTop=rect.top-wrapRect.top;
+    var absX=canvasOffsetLeft+sx;
+    var absY=canvasOffsetTop+sy;
+    crosshair.style.display="block";crosshair.style.left=absX+"px";
+    dot.style.display="block";dot.style.left=absX+"px";dot.style.top=absY+"px";
+    var lblX=absX;if(absX>wrapRect.width-100)lblX=absX-20;
     label.style.display="block";label.style.left=lblX+"px";
     var txt="$"+px.toFixed(2);
-    if(bar){
+    if(bar&&bar._real){
       txt+="  O:"+bar.o.toFixed(2)+" H:"+bar.h.toFixed(2)+" L:"+bar.l.toFixed(2);
       if(bar.v)txt+=" V:"+(bar.v>=1e6?(bar.v/1e6).toFixed(1)+"M":bar.v>=1e3?(bar.v/1e3).toFixed(0)+"K":bar.v);
     }
@@ -1242,13 +1251,8 @@ function switchTab(name){
   // Re-render charts when switching back to Alerts — fixes canvas reset on display:none
   if(name==="Alerts"&&ST.alerts.length){
     requestAnimationFrame(function(){requestAnimationFrame(function(){
-      ST.alerts.forEach(function(a){
-        if(!a._bars||a._bars.length<2)return;
-        var cv=document.getElementById("chart-"+a.tk);
-        if(cv){drawSparkline(cv,a._bars);setupChartTouch(cv,a.tk);}
-        var rsiCv=document.getElementById("rsi-"+a.tk);
-        if(rsiCv)drawRSIChart(rsiCv,a._bars);
-      });
+      drawAllCharts();
+      setTimeout(drawAllCharts,200);
     });});
   }
 }
@@ -1347,26 +1351,36 @@ function runAnalysisSteps(){
   next();
 }
 
+function drawAllCharts(){
+  ST.alerts.forEach(function(a){
+    var cv=document.getElementById("chart-"+a.tk);
+    if(!cv)return;
+    if(!a._bars||a._bars.length<2){
+      var bars=buildSnapshotBars(a);
+      if(bars&&bars.length>=2)a._bars=bars;
+    }
+    if(a._bars&&a._bars.length>=2){
+      drawSparkline(cv,a._bars);
+      setupChartTouch(cv,a.tk);
+      var rsiCv=document.getElementById("rsi-"+a.tk);
+      if(rsiCv)drawRSIChart(rsiCv,a._bars);
+    }
+  });
+}
+
 function loadCharts(){
-  // Double rAF ensures DOM layout is complete before drawing
+  // Triple delayed render — ensures DOM layout + paint is fully complete
   requestAnimationFrame(function(){
     requestAnimationFrame(function(){
-      ST.alerts.forEach(function(a){
-        var cv=document.getElementById("chart-"+a.tk);
-        if(!cv)return;
-        var bars=buildSnapshotBars(a);
-        if(bars&&bars.length>=2){
-          a._bars=bars;
-          drawSparkline(cv,bars);
-          setupChartTouch(cv,a.tk);
-          var rsiCv=document.getElementById("rsi-"+a.tk);
-          if(rsiCv)drawRSIChart(rsiCv,bars);
-        }
-      });
+      drawAllCharts();
+      // Retry after 300ms in case layout wasn't ready
+      setTimeout(drawAllCharts,300);
       // Try to upgrade with real API bar data in background
       ST.alerts.forEach(function(a){
         alpFetchBars(a.tk,"1Day",50).then(function(bars){
           if(!bars||!bars.length)return;
+          // Mark real bars so crosshair shows OHLCV
+          for(var b=0;b<bars.length;b++)bars[b]._real=true;
           a._bars=bars;
           var cv=document.getElementById("chart-"+a.tk);
           if(cv){drawSparkline(cv,bars);setupChartTouch(cv,a.tk);}
@@ -1431,8 +1445,6 @@ function render(){
     var riskSegs="";for(var d=0;d<5;d++)riskSegs+='<div class="risk-seg" style="background:'+(d<rl?riskColors[d]:"var(--s3)")+'"></div>';
     var starred=wlHas(a.tk);
     var liveTag=a._livePx?' <span style="color:var(--accent);font-size:9px;font-weight:600">LIVE</span>':'';
-    // Confidence ring SVG
-    var circumference=2*Math.PI*16;var dashoffset=circumference-(a.cf/100)*circumference;
     var signalLabel=a.tp==="buy"?"LONG":a.tp==="sell"?"SHORT":"WATCH";
 
     h+='<div class="ac signal-'+a.tp+'" style="animation-delay:'+(i*50)+'ms"><div class="ac-main">';
@@ -1464,11 +1476,11 @@ function render(){
     h+='<div class="ac-met"><div class="ac-met-l">R:R</div><div class="ac-met-v">'+a.rr+':1</div></div>';
     h+='</div>';
 
-    // Confidence ring + bar
-    h+='<div class="ac-conf"><div class="conf-ring"><svg viewBox="0 0 36 36"><circle class="ring-bg" cx="18" cy="18" r="16"/><circle class="ring-fill" cx="18" cy="18" r="16" style="stroke:'+cc+';stroke-dasharray:'+circumference+';stroke-dashoffset:'+dashoffset+'"/></svg><div class="conf-ring-val" style="color:'+cc+'">'+a.cf+'</div></div><div class="conf-bar"><div class="conf-fill" style="width:'+a.cf+'%;background:'+cc+'"></div></div><div class="conf-pct" style="color:'+cc+'">'+a.cf+'%</div></div>';
+    // Confidence bar — clean single row
+    h+='<div class="ac-conf"><span class="conf-lbl">AI Confidence</span><div class="conf-bar"><div class="conf-fill" style="width:'+a.cf+'%;background:'+cc+'"></div></div><div class="conf-pct" style="color:'+cc+'">'+a.cf+'%</div></div>';
 
-    // Footer with risk meter
-    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:10px"><span class="ac-tm">'+tm+'</span><div class="risk-meter">'+riskSegs+'</div></div><div class="ac-ft-rt"><span>'+a.sh+' shares</span><span>£'+a.ps.toFixed(0)+'</span></div></div></div>';
+    // Footer — clean
+    h+='<div class="ac-ft"><div style="display:flex;align-items:center;gap:8px"><span class="ac-tm">'+tm+'</span><div class="risk-meter">'+riskSegs+'</div></div><div class="ac-ft-rt"><span class="mono">'+a.sh+' shares · £'+a.ps.toFixed(0)+'</span></div></div></div>';
 
     // Expandable reasoning
     h+='<div class="ac-detail" id="det-'+uid+'"><div class="reasoning"><div class="r-title">Analyst Reasoning</div>';
@@ -1633,7 +1645,7 @@ function renderMovers(){
 
 // ---- CHANGELOG (collapsible in Engine) ----
 function getChangelogHTML(){
-  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v2.0.0</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-27</div></div><div class="cl-cat">Premium Rebuild</div><ul class="cl-list"><li>30-day price forecast with bull/base/bear scenarios per alert</li><li>Deeper 5-layer reasoning engine — 3-4x more analytical detail</li><li>Skeleton shimmer loading cards during scan</li><li>Animated number transitions on stats with counting-up effect</li><li>Auto-refresh prices every 60s during US market hours</li><li>Enhanced watchlist — entry tracking, price change since added, summary view</li><li>Help tab with 14-term trading glossary for beginners</li><li>SVG icons throughout (no more emoji)</li></ul><div class="cl-cat">Charts</div><ul class="cl-list"><li>Fixed charts disappearing on tab switch</li><li>Real technical indicators: RSI (14), MACD (12/26/9), Bollinger Bands, EMA 20/50</li><li>RSI sub-chart with overbought/oversold zones</li><li>Interactive touch crosshair — slide to see OHLCV</li></ul><div class="cl-cat">UI/UX</div><ul class="cl-list"><li>Premium dark fintech theme (#0A0E17 + #00D4AA teal accent)</li><li>Confidence ring SVGs, risk meters, signal badges</li><li>Staggered card animations, scan button shimmer</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.4</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">UI/UX Overhaul</div><ul class="cl-list"><li>Premium UI redesign — dark theme with card depth</li><li>Bezier curve charts with gradient fills and glow effects</li><li>Inline metrics row, confidence progress bar per alert</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Movers tab auto-loads from API on boot</li><li>Top 10 gainers, losers, volume leaders, most volatile</li><li>Watchlist with star button and price-triggered notifications</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><ul class="cl-list"><li>All NASDAQ stocks via Alpaca API</li><li>Real-time prices, batch snapshot fetching</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0</span></div><div class="cl-date">2026-03-20</div></div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>PWA with offline support</li></ul></div>';
+  return '<div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v2.1.0</span><span class="cl-badge latest">Latest</span></div><div class="cl-date">2026-03-27</div></div><div class="cl-cat">Bug Fixes & UI</div><ul class="cl-list"><li>Fixed charts disappearing — robust width calculation with retry</li><li>Fixed crosshair dot misalignment — proper canvas-relative positioning</li><li>Crosshair only shows OHLCV for real API bar data</li><li>Cleaner card layout — larger chart, less clutter, more breathing room</li><li>Horizontal stat strip, simplified confidence bar, cleaner footer</li><li>Premium gradient scan button, improved tab bar, better typography</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v2.0.0</span></div><div class="cl-date">2026-03-27</div></div><div class="cl-cat">Premium Rebuild</div><ul class="cl-list"><li>30-day price forecast with bull/base/bear scenarios per alert</li><li>Deeper 5-layer reasoning engine — 3-4x more analytical detail</li><li>Skeleton shimmer loading cards during scan</li><li>Animated number transitions on stats with counting-up effect</li><li>Auto-refresh prices every 60s during US market hours</li><li>Enhanced watchlist — entry tracking, price change since added, summary view</li><li>Help tab with 14-term trading glossary for beginners</li><li>SVG icons throughout (no more emoji)</li></ul><div class="cl-cat">Charts</div><ul class="cl-list"><li>Fixed charts disappearing on tab switch</li><li>Real technical indicators: RSI (14), MACD (12/26/9), Bollinger Bands, EMA 20/50</li><li>RSI sub-chart with overbought/oversold zones</li><li>Interactive touch crosshair — slide to see OHLCV</li></ul><div class="cl-cat">UI/UX</div><ul class="cl-list"><li>Premium dark fintech theme (#0A0E17 + #00D4AA teal accent)</li><li>Confidence ring SVGs, risk meters, signal badges</li><li>Staggered card animations, scan button shimmer</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.4</span></div><div class="cl-date">2026-03-26</div></div><div class="cl-cat">UI/UX Overhaul</div><ul class="cl-list"><li>Premium UI redesign — dark theme with card depth</li><li>Bezier curve charts with gradient fills and glow effects</li><li>Inline metrics row, confidence progress bar per alert</li></ul><div class="cl-cat">Features</div><ul class="cl-list"><li>Movers tab auto-loads from API on boot</li><li>Top 10 gainers, losers, volume leaders, most volatile</li><li>Watchlist with star button and price-triggered notifications</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.2</span></div><div class="cl-date">2026-03-25</div></div><ul class="cl-list"><li>All NASDAQ stocks via Alpaca API</li><li>Real-time prices, batch snapshot fetching</li></ul></div><div class="cl-ver"><div class="cl-hd"><div><span class="cl-tag">v1.0.0</span></div><div class="cl-date">2026-03-20</div></div><ul class="cl-list"><li>5-layer AI reasoning engine</li><li>PWA with offline support</li></ul></div>';
 }
 
 // ---- AUTO-REFRESH (every 60s during market hours) ----
